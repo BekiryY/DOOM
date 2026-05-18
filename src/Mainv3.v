@@ -601,7 +601,7 @@ cpu u_cpu (
     .boot_done           (boot_done),
     .cpu_done            (cpu_done),
 
-    .ddr_cmd_ready       (ddr_cmd_ready && !fb_dma_busy),  // stall CPU while DMA owns bus
+    .ddr_cmd_ready       (ddr_cmd_ready),      // arbiter mux handles priority
     .ddr_rd_data_valid   (cpu_rd_data_valid),              // filtered by ownership FIFO
     .ddr_rd_data         (ddr_rd_data),
     .ddr_wr_data_rdy     (ddr_wr_data_rdy),

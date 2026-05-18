@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Module name="Main_Computer" Register="353" Lut="523" Bsram="1" T_Register="3843(353)" T_Alu="493(0)" T_Lut="6227(523)" T_MULT36X36="3(0)" T_Bsram="21(1)" T_Ssram="111(0)">
- <SubModule name="icache_inst" Register="58" Lut="83" Bsram="5" T_Register="58(58)" T_Lut="83(83)" T_Bsram="5(5)"/>
+<Module name="Main_Computer" Register="353" Lut="525" Bsram="1" T_Register="3848(353)" T_Alu="493(0)" T_Lut="6278(525)" T_MULT36X36="3(0)" T_Bsram="21(1)" T_Ssram="111(0)">
+ <SubModule name="icache_inst" Register="58" Lut="85" Bsram="5" T_Register="58(58)" T_Lut="85(85)" T_Bsram="5(5)"/>
  <SubModule name="rpll_270_inst"/>
  <SubModule name="r_clock"/>
  <SubModule name="main_ram" Register="1296" Alu="102" Lut="1364" Bsram="8" Ssram="111" T_Register="1296(1296)" T_Alu="102(102)" T_Lut="1364(1364)" T_Bsram="8(8)" T_Ssram="111(111)"/>
  <SubModule name="debug_uart" Register="41" Lut="80" T_Register="41(41)" T_Lut="80(80)"/>
- <SubModule name="spi_inst" Register="158" Lut="189" T_Register="158(158)" T_Lut="189(189)"/>
- <SubModule name="keyboard" Register="102" Alu="10" Lut="333" T_Register="102(102)" T_Alu="10(10)" T_Lut="333(333)"/>
+ <SubModule name="spi_inst" Register="158" Lut="187" T_Register="158(158)" T_Lut="187(187)"/>
+ <SubModule name="keyboard" Register="103" Alu="10" Lut="333" T_Register="103(103)" T_Alu="10(10)" T_Lut="333(333)"/>
  <SubModule name="u_Gowin_rPLL_VGA"/>
- <SubModule name="u_hdmi" Register="93" Alu="69" Lut="258" T_Register="139(93)" T_Alu="69(69)" T_Lut="343(258)">
-  <SubModule name="u_vga" Register="46" Lut="85" T_Register="46(46)" T_Lut="85(85)"/>
+ <SubModule name="u_hdmi" Register="93" Alu="69" Lut="258" T_Register="139(93)" T_Alu="69(69)" T_Lut="339(258)">
+  <SubModule name="u_vga" Register="46" Lut="81" T_Register="46(46)" T_Lut="81(81)"/>
  </SubModule>
- <SubModule name="u_cpu" Register="1437" Alu="274" Lut="3025" MULT36X36="3" T_Register="1496(1437)" T_Alu="293(274)" T_Lut="3216(3025)" T_MULT36X36="3(3)" T_Bsram="7(0)">
-  <SubModule name="cpu_register_controller" Lut="86" Bsram="2" T_Lut="86(86)" T_Bsram="2(2)"/>
+ <SubModule name="u_cpu" Register="1441" Alu="274" Lut="3079" MULT36X36="3" T_Register="1500(1441)" T_Alu="293(274)" T_Lut="3269(3079)" T_MULT36X36="3(3)" T_Bsram="7(0)">
+  <SubModule name="cpu_register_controller" Lut="85" Bsram="2" T_Lut="85(85)" T_Bsram="2(2)"/>
   <SubModule name="dcache_inst" Register="59" Alu="19" Lut="105" Bsram="5" T_Register="59(59)" T_Alu="19(19)" T_Lut="105(105)" T_Bsram="5(5)"/>
  </SubModule>
  <SubModule name="u_fb_dma" Register="200" Alu="19" Lut="96" T_Register="200(200)" T_Alu="19(19)" T_Lut="96(96)"/>
