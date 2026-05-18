@@ -385,6 +385,7 @@ void I_ReadScreen (byte* scr)
 #define GFX_RGB565_G(color)			((0x07E0 & color) >> 5)
 #define GFX_RGB565_B(color)			(0x001F & color)
 
+uint8_t rgb332_palette[256];
 void I_SetPalette (byte* palette)
 {
 	int i;
@@ -410,6 +411,11 @@ void I_SetPalette (byte* palette)
         colors[i].r = gammatable[usegamma][*palette++];
         colors[i].g = gammatable[usegamma][*palette++];
         colors[i].b = gammatable[usegamma][*palette++];
+        
+        uint8_t r = colors[i].r;
+        uint8_t g = colors[i].g;
+        uint8_t b = colors[i].b;
+        rgb332_palette[i] = ((r >> 5) << 5) | ((g >> 5) << 2) | (b >> 6);
     }
 
 #ifdef CMAP256

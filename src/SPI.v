@@ -22,6 +22,7 @@ module SPI_Controller #(
     reg com_status;
     reg [7:0] current_bit; 
     reg [4:0] speed_divider = 0; 
+    reg [31:0] tx_shift = 0;
     
     assign CLK = spi_clk;
     
@@ -35,6 +36,7 @@ module SPI_Controller #(
             current_bit <= 0;
             data_readed <= 32'b0;
             speed_divider <= 0;
+            tx_shift <= 32'd0;
 
         end else begin
             
@@ -44,6 +46,7 @@ module SPI_Controller #(
                 CS <= 0;            
                 current_bit <= 0;
                 MOSI <= command[7]; 
+                tx_shift <= {command, address};
                 spi_clk <= 0;
                 data_readed <= 32'b0;
                 speed_divider <= 0;
@@ -69,13 +72,8 @@ module SPI_Controller #(
                             data_readed <= {data_readed[DATA_LENGTH-2:0], MISO};  //FIFO shifthing read
                         end else begin
                             // --- FALLING EDGE: Update MOSI ---
-                            if (current_bit < 7) begin
-                                MOSI <= command[6 - current_bit];
-                            end else if (current_bit < 31) begin
-                                MOSI <= address[23 - (current_bit - 7)];
-                            end else begin
-                                MOSI <= 0; 
-                            end
+                            MOSI <= tx_shift[30];
+                            tx_shift <= {tx_shift[30:0], 1'b0};
                             current_bit <= current_bit + 8'd1;
                         end
                     end

@@ -62,6 +62,7 @@ wire         uart_wr_en;
 
 reg boot_done = 0;
 reg cpu_done  = 0;
+reg cpu_run   = 0;
 
 wire cpu_active = (boot_done == 1 && cpu_done == 0);
 
@@ -76,9 +77,12 @@ assign uart_data        = cpu_active ? cpu_uart_data        : boot_uart_data;
 assign uart_wr_en       = cpu_active ? cpu_uart_wr_en       : boot_uart_wr_en;
 
 // CPU IO READS (doomgeneric uyumlu)
-wire [31:0]  ps2_data;        // IO 0x4010_0000 — live tuş bitmask
-wire [31:0]  ps2_key_event;   // IO 0x4010_0004 — son tuş event {press[31], doomkey[7:0]}
-wire         ps2_key_ev_valid; // KEY_EVENT geçerliliği (1-saat pulse)
+wire [31:0]  ps2_data;          // IO 0x4010_0000 — live tuş bitmask
+wire [31:0]  ps2_key_event;     // IO 0x4010_0004 — son tuş event {press[31], doomkey[7:0]}
+wire         ps2_key_ev_valid;  // KEY_EVENT geçerliliği (1-saat pulse, dahili)
+wire         ps2_key_ev_pending; // IO 0x4010_0008 — okunmamış event sticky bayrağı
+// key_consumed: CPU 0x4010_0004'ü okuduğunda pending bayrağını sıfırlar
+wire key_consumed = (state == C_IO_READ) && (data_addr == 32'h4010_0004);
 
 // ==============================================================================
 // 2. DDR3 MEMORY INTERFACE
@@ -93,6 +97,14 @@ wire ddr_wr_data_rdy;
 wire [127:0] ddr_rd_data;
 wire ddr_rd_data_valid;
 wire ddr_rd_data_end;
+
+always @(posedge ddr_user_clk or negedge sys_rst_n) begin
+    if (!sys_rst_n) begin
+        cpu_run <= 1'b0;
+    end else begin
+        cpu_run <= boot_done && !cpu_done;
+    end
+end
 
 // ==============================================================================
 // INSTRUCTION CACHE (ICache)
@@ -315,7 +327,7 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
                         boot_byte_idx <= 0;
                         b_state <= b_return_state;
                     end else begin
-                        boot_byte_idx <= boot_byte_idx + 1;
+                        boot_byte_idx <= boot_byte_idx + 2'd1;
                         b_state <= B_UART_SEND;
                     end
                 end
@@ -417,9 +429,11 @@ PS2_Controller keyboard (
     .PS2_CLK_I(PS2_CLK_I),
     .uart_key_ready(uart_key_ready),  // PC klavyesi: key_catcher.py → UART
     .uart_key_data(uart_key_data),    // PC klavyesi: gelen byte
+    .key_consumed(key_consumed),      // CPU KEY_EVENT okuduğunda pending'i temizle
     .DOOM_KEYS(ps2_data),
     .KEY_EVENT(ps2_key_event),
-    .KEY_EV_VALID(ps2_key_ev_valid)
+    .KEY_EV_VALID(ps2_key_ev_valid),
+    .key_ev_pending(ps2_key_ev_pending)
 );
 
 // ==============================================================================
@@ -434,6 +448,7 @@ wire vga_lock;
 Gowin_rPLL_VGA u_Gowin_rPLL_VGA (
     .clkin(sys_clk),
     .lock(vga_lock),
+    .reset(~sys_rst_n),
     .clkout(hdmi_serial_clk)
 );
 
@@ -499,6 +514,16 @@ assign active_display_data = cpu_done ? 32'h03_03_03_03 : main_vram_read_data;
 
 
 // ==============================================================================
+// VSYNC CLOCK DOMAIN SYNCHRONIZER (vga_clk → ddr_user_clk)
+// ==============================================================================
+reg hdmi_vsync_meta = 0;
+reg hdmi_vsync_sync = 0;
+always @(posedge ddr_user_clk) begin
+    hdmi_vsync_meta <= hdmi_vsync;
+    hdmi_vsync_sync <= hdmi_vsync_meta;
+end
+
+// ==============================================================================
 // SYSTEM HARDWARE TIMER (1ms resolution)
 // ==============================================================================
 reg [31:0] ms_counter = 0;
@@ -508,7 +533,7 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
     if (!sys_rst_n) begin
         ms_counter <= 32'd0;
         tick_counter <= 17'd0;
-    end else if (boot_done && !cpu_done) begin
+    end else if (cpu_run) begin
         if (tick_counter >= 17'd99_999) begin
             tick_counter <= 17'd0;
             ms_counter <= ms_counter + 1;
@@ -534,6 +559,12 @@ wire [31:0] read2_data;
 
 reg [4:0] write_addr = 0;
 reg [31:0] write_data = 0;
+reg [31:0] read1_data_reg = 0;
+reg [31:0] read2_data_reg = 0;
+// --- Pre-computed flags (registered after register data is captured) ---
+reg         branch_eq     = 0;  // rs1 == rs2
+reg         branch_lt     = 0;  // $signed(rs1) < $signed(rs2)
+reg         branch_ltu    = 0;  // rs1 < rs2 (unsigned)
 reg write_enable = 0;
 
 CPU_Registers cpu_register_controller(
@@ -592,13 +623,26 @@ localparam C_PREFETCH_ISSUE    = 6'd31;
 localparam C_PREFETCH_CLEANUP  = 6'd32;
 
 // --- RV32M Extension States ---
-localparam C_EXEC_MUL          = 6'd33; // MUL / MULH / MULHU / MULHSU (1 cycle, DSP)
+localparam C_EXEC_MUL          = 6'd33; // MUL / MULH / MULHU / MULHSU DSP stage
 localparam C_DIV_SETUP         = 6'd34; // DIV / DIVU / REM / REMU setup
 localparam C_DIV_EXEC          = 6'd35; // 33-cycle iterative divider
 localparam C_DIV_FINISH        = 6'd36; // write result
 
 // --- Instruction Cache State ---
 localparam C_ICACHE_WAIT       = 6'd37; // 1-cycle BSRAM read latency
+localparam C_DCACHE_WAIT       = 6'd38; // 1-cycle BSRAM read latency
+localparam C_REG_FLAGS_WAIT    = 6'd39; // compare registered rs1/rs2
+localparam C_MUL_FINISH        = 6'd40; // write registered multiplier result
+localparam C_MUL_STEP          = 6'd41; // iterative multiplier add/shift
+localparam C_MUL_SIGN          = 6'd42; // apply signed-product correction
+localparam C_SHIFT_STEP        = 6'd43; // iterative shift
+localparam C_SHIFT_FINISH      = 6'd44; // write shifted value
+localparam C_ALU_FINISH        = 6'd45; // write registered ALU result
+localparam C_WRITEBACK         = 6'd46; // commit wb_data_r into register file path
+localparam C_LOAD_ALIGN        = 6'd47; // align registered load word
+localparam C_LOAD_EXTEND       = 6'd48; // sign/zero extend selected load lane
+localparam C_DIV_WRITEBACK     = 6'd49; // write registered divider result
+localparam C_IO_READ_FINISH    = 6'd50; // write registered IO read data
 
 reg [5:0]  state = C_DDR_WAIT_READ;
 reg [5:0]  return_state = C_DDR_WAIT_READ;
@@ -618,9 +662,10 @@ reg [1:0]   cpu_byte_idx = 0;
 reg [31:0]  cpu_uart_msg = 0;
 
 // Sub-Word Memory Alignment Wires
-reg [31:0]  raw_word = 0;
 reg [3:0]   base_mask = 0;
 reg [31:0]  active_payload = 0;
+reg [26:0]  fetch_block_addr = 0;
+reg [26:0]  prefetch_block_addr = 0;
 
 // program_counter: yukarıda ICache'den önce tanımlandı (satır ~109)
 reg [127:0] memory_read_reg = 0; // Now only used for Data Loads
@@ -652,8 +697,30 @@ reg         div_is_signed  = 0;
 reg         div_is_rem     = 0;
 reg         div_neg_result = 0;  // quotient needs negation
 reg         div_neg_rem    = 0;  // remainder needs negation
-// 64-bit multiplier accumulator (DSP blocks)
+reg [31:0]  div_result_r   = 0;
+// 64-bit iterative multiplier registers
 reg [63:0]  mul_result_r   = 0;
+reg [63:0]  mul_accum_r    = 0;
+reg [63:0]  mul_multiplicand_r = 0;
+reg [31:0]  mul_multiplier_r   = 0;
+reg [5:0]   mul_bit        = 0;
+reg         mul_neg_result = 0;
+reg         mul_high_result = 0;
+reg [31:0]  shift_value_r  = 0;
+reg [4:0]   shift_count_r  = 0;
+reg [1:0]   shift_mode_r   = 0; // 0=SLL, 1=SRL, 2=SRA
+reg [31:0]  alu_result_r   = 0;
+reg [31:0]  wb_data_r      = 0;
+reg [5:0]   wb_return_state = C_DDR_WAIT_READ;
+reg [31:0]  load_raw_word_r = 0;
+reg [1:0]   load_offset_r   = 0;
+reg [2:0]   load_funct3_r   = 0;
+reg [7:0]   load_byte_r     = 0;
+reg [15:0]  load_half_r     = 0;
+reg [31:0]  io_read_data_r  = 0;
+
+wire [31:0] mul_rs1_abs = read1_data_reg[31] ? (~read1_data_reg + 32'd1) : read1_data_reg;
+wire [31:0] mul_rs2_abs = read2_data_reg[31] ? (~read2_data_reg + 32'd1) : read2_data_reg;
 
 // --- Divider combinational step wires (restoring algorithm) ---
 // Each cycle: shift PR left by 1, bring in MSB of dividend (div_working[31])
@@ -672,12 +739,42 @@ wire [31:0] imm_s = {{20{current_instr[31]}}, current_instr[31:25], current_inst
 wire [31:0] imm_b = {{20{current_instr[31]}}, current_instr[7], current_instr[30:25], current_instr[11:8], 1'b0};
 wire [31:0] imm_j = {{12{current_instr[31]}}, current_instr[19:12], current_instr[20], current_instr[30:21], 1'b0};
 wire [31:0] imm_u = {current_instr[31:12], 12'b0};
+reg [31:0]  imm_i_reg = 0;
+reg [31:0]  imm_s_reg = 0;
+reg [31:0]  imm_b_reg = 0;
+reg [31:0]  imm_j_reg = 0;
+reg [31:0]  imm_u_reg = 0;
 
 reg         is_instruction_fetch = 1;
 reg [31:0]  data_addr = 0;
 reg [31:0]  cpu_store_data = 0;
 
 reg [4:0]   dump_reg_idx = 0;
+
+wire        dcache_hit;
+wire [31:0] dcache_data;
+wire        dcache_valid;
+reg         dcache_fill_en   = 0;
+reg [31:0]  dcache_fill_addr = 0;
+reg [127:0] dcache_fill_data = 0;
+reg         dcache_req       = 0;
+reg         dcache_inv_en    = 0;
+reg [31:0]  dcache_inv_addr  = 0;
+
+DCache dcache_inst (
+    .clk       (ddr_user_clk),
+    .rst_n     (sys_rst_n),
+    .cpu_addr  (data_addr),
+    .cpu_req   (dcache_req),
+    .cpu_data  (dcache_data),
+    .cpu_valid (dcache_valid),
+    .cache_hit (dcache_hit),
+    .fill_addr (dcache_fill_addr),
+    .fill_data (dcache_fill_data),
+    .fill_en   (dcache_fill_en),
+    .inv_addr  (dcache_inv_addr),
+    .inv_en    (dcache_inv_en)
+);
 
 always @(posedge ddr_user_clk or negedge sys_rst_n) begin
     if (!sys_rst_n) begin
@@ -698,12 +795,49 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
         vram_write_en <= 0;
         dump_reg_idx <= 5'd0;
         pending_exec_state <= 0;
+        write_enable <= 0;
+        write_data <= 32'd0;
+        read1_addr <= 5'd0;
+        read2_addr <= 5'd0;
+        write_addr <= 5'd0;
+        read1_data_reg <= 32'd0;
+        read2_data_reg <= 32'd0;
+        branch_eq <= 1'b0;
+        branch_lt <= 1'b0;
+        branch_ltu <= 1'b0;
+        div_result_r <= 32'd0;
+        imm_i_reg <= 32'd0;
+        imm_s_reg <= 32'd0;
+        imm_b_reg <= 32'd0;
+        imm_j_reg <= 32'd0;
+        imm_u_reg <= 32'd0;
+        fetch_block_addr <= 27'd0;
+        prefetch_block_addr <= 27'd0;
+        mul_result_r <= 64'd0;
+        mul_accum_r <= 64'd0;
+        mul_multiplicand_r <= 64'd0;
+        mul_multiplier_r <= 32'd0;
+        mul_bit <= 6'd0;
+        mul_neg_result <= 1'b0;
+        mul_high_result <= 1'b0;
+        shift_value_r <= 32'd0;
+        shift_count_r <= 5'd0;
+        shift_mode_r <= 2'd0;
+        alu_result_r <= 32'd0;
+        wb_data_r <= 32'd0;
+        wb_return_state <= C_DDR_WAIT_READ;
+        load_raw_word_r <= 32'd0;
+        load_offset_r <= 2'd0;
+        load_funct3_r <= 3'd0;
+        load_byte_r <= 8'd0;
+        load_half_r <= 16'd0;
+        io_read_data_r <= 32'd0;
 
         // Reset Queue
         rq_head <= 0; rq_tail <= 0; rq_is_data <= 0;
         pf_valid <= 0; dmem_valid <= 0; pf_ready_addr <= 27'h7FFFFFF;
 
-    end else if (boot_done && !cpu_done) begin
+    end else if (cpu_run) begin
 
         // ========================================================
         // GLOBAL SNOOPING QUEUE (Background Data Catcher)
@@ -713,6 +847,15 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
                 // It was a Data Load Request
                 dmem_read_reg <= ddr_rd_data;
                 dmem_valid    <= 1;
+                
+                // ─── DCache doldur ───────────────────────────────────────
+                dcache_fill_en   <= 1;
+                dcache_fill_addr <= (rq_tail == 2'd0) ? {rq_addr_0, 4'b0} :
+                                    (rq_tail == 2'd1) ? {rq_addr_1, 4'b0} :
+                                    (rq_tail == 2'd2) ? {rq_addr_2, 4'b0} :
+                                                        {rq_addr_3, 4'b0};
+                dcache_fill_data <= ddr_rd_data;
+                // ─────────────────────────────────────────────────────────
             end else begin
                 // It was an Instruction Prefetch Request
                 pf_read_reg   <= ddr_rd_data;
@@ -735,6 +878,7 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             rq_tail <= rq_tail + 2'd1; // Advance the FIFO
         end else begin
             icache_fill_en <= 0; // pulse genişliği sadece 1 saat
+            dcache_fill_en <= 0;
         end
         // ========================================================
 
@@ -765,53 +909,22 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
 
             C_DDR_WAIT_READ: begin
                 write_enable  <= 0;
-                icache_req    <= 0;
 
                 if (is_instruction_fetch == 0 && data_addr >= 32'h40000000) begin
+                    icache_req <= 0;
+                    dcache_req <= 0;
                     state <= C_IO_READ;
                 end
                 else if (is_instruction_fetch == 1'b1) begin
-
-                    // ─── 1. Önce ICache'e bak (en hızlı yol) ────────────
-                    if (icache_hit) begin
-                        icache_req <= 1;
-                        state <= C_ICACHE_WAIT; // 1 saat BSRAM latency
-                    end
-                    // ─── 2. Prefetch buffer'da var mı? ──────────────────
-                    else if (pf_valid && pf_ready_addr == {program_counter[27:4], 3'b000}) begin
-                        pf_valid    <= 0;
-                        icache_req  <= 0;
-                        first_instr  <= {pf_read_reg[103:96], pf_read_reg[111:104], pf_read_reg[119:112], pf_read_reg[127:120]};
-                        second_instr <= {pf_read_reg[71:64],  pf_read_reg[79:72],   pf_read_reg[87:80],   pf_read_reg[95:88]};
-                        third_instr  <= {pf_read_reg[39:32],  pf_read_reg[47:40],   pf_read_reg[55:48],   pf_read_reg[63:56]};
-                        fourth_instr <= {pf_read_reg[7:0],    pf_read_reg[15:8],    pf_read_reg[23:16],   pf_read_reg[31:24]};
-                        state <= C_LOAD_INSTR;
-                    end
-                    // ─── 3. DDR3'e git ───────────────────────────────────
-                    else if (ddr_cmd_ready) begin
-                        icache_req       <= 0;
-                        cpu_ddr_cmd      <= 3'b001;
-                        cpu_ddr_cmd_en   <= 1;
-                        cpu_user_addr    <= {program_counter[27:4], 3'b000};
-                        rq_is_data[rq_head] <= 0;
-                        case (rq_head)
-                            2'd0: rq_addr_0 <= {program_counter[27:4], 3'b000};
-                            2'd1: rq_addr_1 <= {program_counter[27:4], 3'b000};
-                            2'd2: rq_addr_2 <= {program_counter[27:4], 3'b000};
-                            2'd3: rq_addr_3 <= {program_counter[27:4], 3'b000};
-                        endcase
-                        rq_head <= rq_head + 2'd1;
-                        state   <= C_DDR_READ;
-                    end
+                    icache_req <= 1;
+                    dcache_req <= 0;
+                    fetch_block_addr <= {program_counter[27:4], 3'b000};
+                    state <= C_ICACHE_WAIT; // Pipeline ICache
                 end
-                else if (ddr_cmd_ready) begin
-                    // Normal Data Load
-                    cpu_ddr_cmd    <= 3'b001;
-                    cpu_ddr_cmd_en <= 1;
-                    cpu_user_addr  <= {data_addr[27:4], 3'b000};
-                    rq_is_data[rq_head] <= 1;
-                    rq_head <= rq_head + 2'd1;
-                    state   <= C_DDR_READ;
+                else begin
+                    icache_req <= 0;
+                    dcache_req <= 1;
+                    state <= C_DCACHE_WAIT; // Pipeline DCache
                 end
             end
 
@@ -825,7 +938,7 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
                 if (is_instruction_fetch) begin
                     if (pf_valid) begin
                         // Check if it's the data we actually want (Protects against stray branch prefetches)
-                        if (pf_ready_addr == {program_counter[27:4], 3'b000}) begin
+                        if (pf_ready_addr == fetch_block_addr) begin
                             pf_valid <= 0;
                             first_instr  <= {pf_read_reg[103:96], pf_read_reg[111:104], pf_read_reg[119:112], pf_read_reg[127:120]};
                             second_instr <= {pf_read_reg[71:64],  pf_read_reg[79:72],   pf_read_reg[87:80],   pf_read_reg[95:88]};
@@ -860,9 +973,59 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             // ICache hit: BSRAM 1 saat okuma gecikmesi bekleniyor
             C_ICACHE_WAIT: begin
                 write_enable <= 0;
+                icache_req   <= 0;
                 if (icache_valid) begin
                     current_instr <= icache_data;
                     state         <= C_DECODE;
+                end
+                else if (pf_valid && pf_ready_addr == fetch_block_addr) begin
+                    pf_valid    <= 0;
+                    first_instr  <= {pf_read_reg[103:96], pf_read_reg[111:104], pf_read_reg[119:112], pf_read_reg[127:120]};
+                    second_instr <= {pf_read_reg[71:64],  pf_read_reg[79:72],   pf_read_reg[87:80],   pf_read_reg[95:88]};
+                    third_instr  <= {pf_read_reg[39:32],  pf_read_reg[47:40],   pf_read_reg[55:48],   pf_read_reg[63:56]};
+                    fourth_instr <= {pf_read_reg[7:0],    pf_read_reg[15:8],    pf_read_reg[23:16],   pf_read_reg[31:24]};
+                    state <= C_LOAD_INSTR;
+                end
+                else if (ddr_cmd_ready) begin
+                    cpu_ddr_cmd      <= 3'b001;
+                    cpu_ddr_cmd_en   <= 1;
+                    cpu_user_addr    <= fetch_block_addr;
+                    rq_is_data[rq_head] <= 0;
+                    case (rq_head)
+                        2'd0: rq_addr_0 <= fetch_block_addr;
+                        2'd1: rq_addr_1 <= fetch_block_addr;
+                        2'd2: rq_addr_2 <= fetch_block_addr;
+                        2'd3: rq_addr_3 <= fetch_block_addr;
+                    endcase
+                    rq_head <= rq_head + 2'd1;
+                    state   <= C_DDR_READ;
+                end
+            end
+
+            // DCache hit: 1 saat gecikme
+            C_DCACHE_WAIT: begin
+                write_enable <= 0;
+                dcache_req   <= 0;
+                if (dcache_valid) begin
+                    load_raw_word_r <= dcache_data;
+                    load_offset_r <= data_addr[1:0];
+                    load_funct3_r <= funct3;
+                    wb_return_state <= return_state;
+                    state <= C_LOAD_ALIGN;
+                end
+                else if (ddr_cmd_ready) begin
+                    cpu_ddr_cmd    <= 3'b001;
+                    cpu_ddr_cmd_en <= 1;
+                    cpu_user_addr  <= {data_addr[27:4], 3'b000};
+                    rq_is_data[rq_head] <= 1;
+                    case (rq_head)
+                        2'd0: rq_addr_0 <= {data_addr[27:4], 3'b000};
+                        2'd1: rq_addr_1 <= {data_addr[27:4], 3'b000};
+                        2'd2: rq_addr_2 <= {data_addr[27:4], 3'b000};
+                        2'd3: rq_addr_3 <= {data_addr[27:4], 3'b000};
+                    endcase
+                    rq_head <= rq_head + 2'd1;
+                    state   <= C_DDR_READ;
                 end
             end
 
@@ -884,6 +1047,11 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
                 opcode <= current_instr[6:0];
                 funct3 <= current_instr[14:12];
                 funct7 <= current_instr[31:25];
+                imm_i_reg <= imm_i;
+                imm_s_reg <= imm_s;
+                imm_b_reg <= imm_b;
+                imm_j_reg <= imm_j;
+                imm_u_reg <= imm_u;
 
                 read1_addr <= current_instr[19:15];
                 read2_addr <= current_instr[24:20];
@@ -934,6 +1102,19 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             end
 
             C_REG_FETCH_WAIT: begin
+                read1_data_reg <= read1_data;
+                read2_data_reg <= read2_data;
+                if (pending_exec_state == C_EXEC_BRANCH) begin
+                    state <= C_REG_FLAGS_WAIT;
+                end else begin
+                    state <= pending_exec_state;
+                end
+            end
+
+            C_REG_FLAGS_WAIT: begin
+                branch_eq    <= (read1_data_reg == read2_data_reg);
+                branch_lt    <= ($signed(read1_data_reg) < $signed(read2_data_reg));
+                branch_ltu   <= (read1_data_reg < read2_data_reg);
                 state <= pending_exec_state;
             end
 
@@ -941,32 +1122,67 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             // RV32M — MULTIPLICATION  (1 cycle, uses Gowin DSP48 blocks)
             // ========================================================
             C_EXEC_MUL: begin
-                write_enable <= 1;
+                write_enable <= 0;
+                mul_accum_r <= 64'd0;
+                mul_bit <= 6'd0;
                 case (funct3)
                     3'b000: begin // MUL — lower 32 bits of rs1 * rs2
-                        mul_result_r <= $signed({{32{read1_data[31]}}, read1_data}) *
-                                        $signed({{32{read2_data[31]}}, read2_data});
-                        write_data <= (read1_data * read2_data); // synth uses DSP
+                        mul_multiplicand_r <= {32'd0, read1_data_reg};
+                        mul_multiplier_r   <= read2_data_reg;
+                        mul_neg_result     <= 1'b0;
+                        mul_high_result    <= 1'b0;
                     end
                     3'b001: begin // MULH — upper 32 bits, signed × signed
-                        mul_result_r <= $signed({{32{read1_data[31]}}, read1_data}) *
-                                        $signed({{32{read2_data[31]}}, read2_data});
-                        write_data <= ($signed({{32{read1_data[31]}}, read1_data}) *
-                                       $signed({{32{read2_data[31]}}, read2_data})) >> 32;
+                        mul_multiplicand_r <= {32'd0, mul_rs1_abs};
+                        mul_multiplier_r   <= mul_rs2_abs;
+                        mul_neg_result     <= read1_data_reg[31] ^ read2_data_reg[31];
+                        mul_high_result    <= 1'b1;
                     end
                     3'b010: begin // MULHSU — upper 32 bits, signed × unsigned
-                        mul_result_r <= $signed({{32{read1_data[31]}}, read1_data}) *
-                                        {32'd0, read2_data};
-                        write_data <= ($signed({{32{read1_data[31]}}, read1_data}) *
-                                       {32'd0, read2_data}) >> 32;
+                        mul_multiplicand_r <= {32'd0, mul_rs1_abs};
+                        mul_multiplier_r   <= read2_data_reg;
+                        mul_neg_result     <= read1_data_reg[31];
+                        mul_high_result    <= 1'b1;
                     end
                     3'b011: begin // MULHU — upper 32 bits, unsigned × unsigned
-                        mul_result_r <= {32'd0, read1_data} * {32'd0, read2_data};
-                        write_data <= ({32'd0, read1_data} * {32'd0, read2_data}) >> 32;
+                        mul_multiplicand_r <= {32'd0, read1_data_reg};
+                        mul_multiplier_r   <= read2_data_reg;
+                        mul_neg_result     <= 1'b0;
+                        mul_high_result    <= 1'b1;
                     end
-                    default: write_data <= 32'd0;
+                    default: begin
+                        mul_multiplicand_r <= 64'd0;
+                        mul_multiplier_r   <= 32'd0;
+                        mul_neg_result     <= 1'b0;
+                        mul_high_result    <= 1'b0;
+                    end
                 endcase
-                state <= return_state;
+                state <= C_MUL_STEP;
+            end
+
+            C_MUL_STEP: begin
+                if (mul_multiplier_r[0]) begin
+                    mul_accum_r <= mul_accum_r + mul_multiplicand_r;
+                end
+                mul_multiplicand_r <= {mul_multiplicand_r[62:0], 1'b0};
+                mul_multiplier_r   <= {1'b0, mul_multiplier_r[31:1]};
+                if (mul_bit == 6'd31) begin
+                    state <= C_MUL_SIGN;
+                end else begin
+                    mul_bit <= mul_bit + 6'd1;
+                end
+            end
+
+            C_MUL_SIGN: begin
+                mul_result_r <= mul_neg_result ? (~mul_accum_r + 64'd1) : mul_accum_r;
+                state <= C_MUL_FINISH;
+            end
+
+            C_MUL_FINISH: begin
+                write_enable <= 0;
+                wb_data_r <= mul_high_result ? mul_result_r[63:32] : mul_result_r[31:0];
+                wb_return_state <= return_state;
+                state <= C_WRITEBACK;
             end
 
             // ========================================================
@@ -976,33 +1192,32 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             C_DIV_SETUP: begin
                 div_is_signed  <= (funct3 == 3'b100 || funct3 == 3'b110);
                 div_is_rem     <= (funct3 == 3'b110 || funct3 == 3'b111);
+                wb_data_r <= (funct3 == 3'b110 || funct3 == 3'b111) ?
+                             read1_data_reg : 32'hFFFF_FFFF;
+                wb_return_state <= return_state;
 
-                if (read2_data == 32'd0) begin
+                if (read2_data_reg == 32'd0) begin
                     // Division by zero — RISC-V spec mandates specific values
                     // DIV/DIVU → 0xFFFFFFFF, REM/REMU → dividend
-                    write_data   <= (funct3 == 3'b110 || funct3 == 3'b111) ?
-                                    read1_data : 32'hFFFF_FFFF;
-                    write_enable <= 1;
-                    state        <= return_state;
+                    write_enable <= 0;
+                    state <= C_WRITEBACK;
                 end else begin
                     // Consolidate sign and absolute value in one block
                     div_neg_result <= (funct3 == 3'b100 || funct3 == 3'b110) ?
-                                      (read1_data[31] ^ read2_data[31]) : 1'b0;
+                                      (read1_data_reg[31] ^ read2_data_reg[31]) : 1'b0;
                     div_neg_rem    <= (funct3 == 3'b100 || funct3 == 3'b110) ?
-                                      read1_data[31] : 1'b0;
+                                      read1_data_reg[31] : 1'b0;
                     // Working register: upper 32 bits = 0 (partial remainder starts at 0)
                     //                   lower 32 bits = |dividend|
                     div_working   <= {32'd0,
-                                      ((funct3 == 3'b100 || funct3 == 3'b110) && read1_data[31]) ?
-                                      (~read1_data + 1) : read1_data};
-                    div_divisor_r <= ((funct3 == 3'b100 || funct3 == 3'b110) && read2_data[31]) ?
-                                     (~read2_data + 1) : read2_data;
+                                      ((funct3 == 3'b100 || funct3 == 3'b110) && read1_data_reg[31]) ?
+                                      (~read1_data_reg + 1) : read1_data_reg};
+                    div_divisor_r <= ((funct3 == 3'b100 || funct3 == 3'b110) && read2_data_reg[31]) ?
+                                     (~read2_data_reg + 1) : read2_data_reg;
                     div_bit <= 6'd0;
                     state   <= C_DIV_EXEC;
                 end
             end
-
-            
 
             // Restoring divider — one bit per clock, 32 clocks total
             // Uses div_working[63:32] as partial remainder
@@ -1020,104 +1235,182 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             end
 
             C_DIV_FINISH: begin
-                write_enable <= 1;
+                write_enable <= 0;
                 if (div_is_rem) begin
                     // Remainder is in upper 32 bits, apply sign
-                    write_data <= div_neg_rem ?
-                                  (~div_working[63:32] + 1) : div_working[63:32];
+                    div_result_r <= div_neg_rem ?
+                                    (~div_working[63:32] + 1) : div_working[63:32];
                 end else begin
                     // Quotient is in lower 32 bits, apply sign
-                    write_data <= div_neg_result ?
-                                  (~div_working[31:0] + 1) : div_working[31:0];
+                    div_result_r <= div_neg_result ?
+                                    (~div_working[31:0] + 1) : div_working[31:0];
                 end
-                state <= return_state;
+                wb_return_state <= return_state;
+                state <= C_DIV_WRITEBACK;
+            end
+
+            C_DIV_WRITEBACK: begin
+                write_enable <= 0;
+                wb_data_r <= div_result_r;
+                state <= C_WRITEBACK;
             end
 
             C_EXEC_R_TYPE: begin
-                write_enable <= 1;
-                case (funct3)
-                    3'b000: begin
-                        if (funct7 == 7'b0100000) write_data <= read1_data - read2_data;
-                        else write_data <= read1_data + read2_data;
-                    end
-                    3'b001: write_data <= read1_data << read2_data[4:0];
-                    3'b010: write_data <= ($signed(read1_data) < $signed(read2_data)) ? 32'd1 : 32'd0;
-                    3'b011: write_data <= (read1_data < read2_data) ? 32'd1 : 32'd0;
-                    3'b100: write_data <= read1_data ^ read2_data;
-                    3'b101: begin
-                        if (funct7 == 7'b0100000)
-                            write_data <= $signed(read1_data) >>> read2_data[4:0];
-                        else
-                            write_data <= read1_data >> read2_data[4:0];
-                    end
-                    3'b110: write_data <= read1_data | read2_data;
-                    3'b111: write_data <= read1_data & read2_data;
-                endcase
-                state <= return_state;
+                if (funct3 == 3'b001 || funct3 == 3'b101) begin
+                    write_enable <= 0;
+                    shift_value_r <= read1_data_reg;
+                    shift_count_r <= read2_data_reg[4:0];
+                    shift_mode_r <= (funct3 == 3'b001) ? 2'd0 :
+                                    ((funct7 == 7'b0100000) ? 2'd2 : 2'd1);
+                    state <= C_SHIFT_STEP;
+                end else begin
+                    write_enable <= 0;
+                    case (funct3)
+                        3'b000: begin
+                            if (funct7 == 7'b0100000) alu_result_r <= read1_data_reg - read2_data_reg;
+                            else alu_result_r <= read1_data_reg + read2_data_reg;
+                        end
+                        3'b010: alu_result_r <= ($signed(read1_data_reg) < $signed(read2_data_reg)) ? 32'd1 : 32'd0;
+                        3'b011: alu_result_r <= (read1_data_reg < read2_data_reg) ? 32'd1 : 32'd0;
+                        3'b100: alu_result_r <= read1_data_reg ^ read2_data_reg;
+                        3'b110: alu_result_r <= read1_data_reg | read2_data_reg;
+                        3'b111: alu_result_r <= read1_data_reg & read2_data_reg;
+                        default: alu_result_r <= 32'd0;
+                    endcase
+                    state <= C_ALU_FINISH;
+                end
             end
 
             C_EXEC_I_TYPE: begin
-                write_enable <= 1;
-                case (funct3)
-                    3'b000: write_data <= read1_data + imm_i;
-                    3'b001: write_data <= read1_data << imm_i[4:0];
-                    3'b010: write_data <= ($signed(read1_data) < $signed(imm_i)) ? 32'd1 : 32'd0;
-                    3'b011: write_data <= (read1_data < imm_i) ? 32'd1 : 32'd0;
-                    3'b100: write_data <= read1_data ^ imm_i;
-                    3'b101: begin
-                        if (current_instr[30] == 1'b1)
-                            write_data <= $signed(read1_data) >>> imm_i[4:0];
-                        else
-                            write_data <= read1_data >> imm_i[4:0];
+                if (funct3 == 3'b001 || funct3 == 3'b101) begin
+                    write_enable <= 0;
+                    shift_value_r <= read1_data_reg;
+                    shift_count_r <= imm_i_reg[4:0];
+                    shift_mode_r <= (funct3 == 3'b001) ? 2'd0 :
+                                    ((funct7[5] == 1'b1) ? 2'd2 : 2'd1);
+                    state <= C_SHIFT_STEP;
+                end else begin
+                    write_enable <= 0;
+                    case (funct3)
+                        3'b000: alu_result_r <= read1_data_reg + imm_i_reg;
+                        3'b010: alu_result_r <= ($signed(read1_data_reg) < $signed(imm_i_reg)) ? 32'd1 : 32'd0;
+                        3'b011: alu_result_r <= (read1_data_reg < imm_i_reg) ? 32'd1 : 32'd0;
+                        3'b100: alu_result_r <= read1_data_reg ^ imm_i_reg;
+                        3'b110: alu_result_r <= read1_data_reg | imm_i_reg;
+                        3'b111: alu_result_r <= read1_data_reg & imm_i_reg;
+                        default: alu_result_r <= 32'd0;
+                    endcase
+                    state <= C_ALU_FINISH;
+                end
+            end
+
+            C_SHIFT_STEP: begin
+                if (shift_count_r == 5'd0) begin
+                    state <= C_SHIFT_FINISH;
+                end else begin
+                    case (shift_mode_r)
+                        2'd0: shift_value_r <= {shift_value_r[30:0], 1'b0};
+                        2'd1: shift_value_r <= {1'b0, shift_value_r[31:1]};
+                        default: shift_value_r <= {shift_value_r[31], shift_value_r[31:1]};
+                    endcase
+                    shift_count_r <= shift_count_r - 5'd1;
+                    if (shift_count_r == 5'd1) begin
+                        state <= C_SHIFT_FINISH;
                     end
-                    3'b110: write_data <= read1_data | imm_i;
-                    3'b111: write_data <= read1_data & imm_i;
+                end
+            end
+
+            C_SHIFT_FINISH: begin
+                write_enable <= 0;
+                wb_data_r <= shift_value_r;
+                wb_return_state <= return_state;
+                state <= C_WRITEBACK;
+            end
+
+            C_ALU_FINISH: begin
+                write_enable <= 0;
+                wb_data_r <= alu_result_r;
+                wb_return_state <= return_state;
+                state <= C_WRITEBACK;
+            end
+
+            C_WRITEBACK: begin
+                write_enable <= 1;
+                write_data <= wb_data_r;
+                state <= wb_return_state;
+            end
+
+            C_LOAD_ALIGN: begin
+                write_enable <= 0;
+                case (load_offset_r)
+                    2'b00: load_byte_r <= load_raw_word_r[7:0];
+                    2'b01: load_byte_r <= load_raw_word_r[15:8];
+                    2'b10: load_byte_r <= load_raw_word_r[23:16];
+                    2'b11: load_byte_r <= load_raw_word_r[31:24];
                 endcase
-                state <= return_state;
+                if (load_offset_r[1] == 1'b0) begin
+                    load_half_r <= load_raw_word_r[15:0];
+                end else begin
+                    load_half_r <= load_raw_word_r[31:16];
+                end
+                state <= C_LOAD_EXTEND;
+            end
+
+            C_LOAD_EXTEND: begin
+                write_enable <= 0;
+                case (load_funct3_r)
+                    3'b000: wb_data_r <= {{24{load_byte_r[7]}}, load_byte_r};
+                    3'b100: wb_data_r <= {24'd0, load_byte_r};
+                    3'b001: wb_data_r <= {{16{load_half_r[15]}}, load_half_r};
+                    3'b101: wb_data_r <= {16'd0, load_half_r};
+                    3'b010: wb_data_r <= load_raw_word_r;
+                    default: wb_data_r <= load_raw_word_r;
+                endcase
+                state <= C_WRITEBACK;
             end
 
             C_EXEC_LOAD: begin
-                data_addr <= read1_data + imm_i;
+                data_addr <= read1_data_reg + imm_i_reg;
                 is_instruction_fetch <= 0;
                 state <= C_DDR_WAIT_READ;
             end
 
             C_EXEC_STORE: begin
-                data_addr <= read1_data + imm_s;
-                cpu_store_data <= read2_data;
+                data_addr <= read1_data_reg + imm_s_reg;
+                cpu_store_data <= read2_data_reg;
                 state <= C_DDR_WAIT_WRITE;
             end
 
             C_EXEC_BRANCH: begin
                 state <= return_state;
                 case (funct3)
-                    3'b000: if (read1_data == read2_data) begin
-                        program_counter <= program_counter + imm_b;
+                    3'b000: if (branch_eq) begin
+                        program_counter <= program_counter + imm_b_reg;
                         is_instruction_fetch <= 1;
                         state <= C_DDR_WAIT_READ;
                     end
-                    3'b001: if (read1_data != read2_data) begin
-                        program_counter <= program_counter + imm_b;
+                    3'b001: if (!branch_eq) begin
+                        program_counter <= program_counter + imm_b_reg;
                         is_instruction_fetch <= 1;
                         state <= C_DDR_WAIT_READ;
                     end
-                    3'b100: if ($signed(read1_data) < $signed(read2_data)) begin
-                        program_counter <= program_counter + imm_b;
+                    3'b100: if (branch_lt) begin
+                        program_counter <= program_counter + imm_b_reg;
                         is_instruction_fetch <= 1;
                         state <= C_DDR_WAIT_READ;
                     end
-                    3'b101: if ($signed(read1_data) >= $signed(read2_data)) begin
-                        program_counter <= program_counter + imm_b;
+                    3'b101: if (!branch_lt) begin
+                        program_counter <= program_counter + imm_b_reg;
                         is_instruction_fetch <= 1;
                         state <= C_DDR_WAIT_READ;
                     end
-                    3'b110: if (read1_data < read2_data) begin
-                        program_counter <= program_counter + imm_b;
+                    3'b110: if (branch_ltu) begin
+                        program_counter <= program_counter + imm_b_reg;
                         is_instruction_fetch <= 1;
                         state <= C_DDR_WAIT_READ;
                     end
-                    3'b111: if (read1_data >= read2_data) begin
-                        program_counter <= program_counter + imm_b;
+                    3'b111: if (!branch_ltu) begin
+                        program_counter <= program_counter + imm_b_reg;
                         is_instruction_fetch <= 1;
                         state <= C_DDR_WAIT_READ;
                     end
@@ -1125,31 +1418,35 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             end
 
             C_EXEC_JAL: begin
-                write_data <= program_counter + 32'd4;
-                write_enable <= 1;
-                program_counter <= program_counter + imm_j;
+                wb_data_r <= program_counter + 32'd4;
+                wb_return_state <= C_DDR_WAIT_READ;
+                write_enable <= 0;
+                program_counter <= program_counter + imm_j_reg;
                 is_instruction_fetch <= 1;
-                state <= C_DDR_WAIT_READ;
+                state <= C_WRITEBACK;
             end
 
             C_EXEC_JALR: begin
-                write_data <= program_counter + 32'd4;
-                write_enable <= 1;
-                program_counter <= (read1_data + imm_i) & 32'hFFFF_FFFE;
+                wb_data_r <= program_counter + 32'd4;
+                wb_return_state <= C_DDR_WAIT_READ;
+                write_enable <= 0;
+                program_counter <= (read1_data_reg + imm_i_reg) & 32'hFFFF_FFFE;
                 is_instruction_fetch <= 1;
-                state <= C_DDR_WAIT_READ;
+                state <= C_WRITEBACK;
             end
 
             C_EXEC_LUI: begin
-                write_data <= imm_u;
-                write_enable <= 1;
-                state <= C_EXECUTE;
+                wb_data_r <= imm_u_reg;
+                wb_return_state <= C_EXECUTE;
+                write_enable <= 0;
+                state <= C_WRITEBACK;
             end
 
             C_EXEC_AUIPC: begin
-                write_data <= program_counter + imm_u;
-                write_enable <= 1;
-                state <= C_EXECUTE;
+                wb_data_r <= program_counter + imm_u_reg;
+                wb_return_state <= C_EXECUTE;
+                write_enable <= 0;
+                state <= C_WRITEBACK;
             end
 
             // ========================================================
@@ -1158,22 +1455,32 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             C_IO_READ: begin
                 if (data_addr == 32'h4010_0000) begin
                     // doomgeneric DG_GetKey: live key-state bitmask
-                    write_data <= ps2_data;
+                    io_read_data_r <= ps2_data;
                 end else if (data_addr == 32'h4010_0004) begin
                     // doomgeneric DG_GetKey: last key event {press[31], doomkey[7:0]}
-                    // C kodu bu adresi KEY_EV_VALID pulse'dan sonra okur
-                    write_data <= ps2_key_event;
+                    // Okuma aynı zamanda key_consumed pulse'u üretir → pending temizlenir
+                    io_read_data_r <= ps2_key_event;
+                end else if (data_addr == 32'h4010_0008) begin
+                    // Yeni okunmamış event var mı? (sticky pending flag)
+                    io_read_data_r <= {31'd0, ps2_key_ev_pending};
                 end else if (data_addr == 32'h4030_0000) begin
                     // doomgeneric DG_GetTicksMs
-                    write_data <= ms_counter;
+                    io_read_data_r <= ms_counter;
                 end else if (data_addr == 32'h4040_0000) begin
-                    // doomgeneric DG_DrawFrame vsync bekleme
-                    write_data <= {31'd0, hdmi_vsync};
+                    // doomgeneric DG_DrawFrame vsync bekleme (sync'li sinyal)
+                    io_read_data_r <= {31'd0, hdmi_vsync_sync};
                 end else begin
-                    write_data <= 32'd0;
+                    io_read_data_r <= 32'd0;
                 end
-                write_enable <= 1;
-                state <= C_EXECUTE;
+                wb_return_state <= C_EXECUTE;
+                write_enable <= 0;
+                state <= C_IO_READ_FINISH;
+            end
+
+            C_IO_READ_FINISH: begin
+                write_enable <= 0;
+                wb_data_r <= io_read_data_r;
+                state <= C_WRITEBACK;
             end
 
             C_IO_WRITE: begin
@@ -1202,6 +1509,7 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
                 vram_write_en <= 0;
 
                 program_counter <= program_counter + 32'd4;
+                prefetch_block_addr <= {program_counter[27:4], 3'b000} + 27'd8;
                 is_instruction_fetch <= 1;
 
                 if (program_counter[3:2] == 2'b00) begin
@@ -1218,13 +1526,13 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
                 if (ddr_cmd_ready) begin
                     cpu_ddr_cmd <= 3'b001;
                     cpu_ddr_cmd_en <= 1;
-                    cpu_user_addr <= {program_counter[27:4], 3'b000} + 27'd8;
+                    cpu_user_addr <= prefetch_block_addr;
                     rq_is_data[rq_head] <= 0;
                     case (rq_head)
-                        2'd0: rq_addr_0 <= {program_counter[27:4], 3'b000} + 27'd8;
-                        2'd1: rq_addr_1 <= {program_counter[27:4], 3'b000} + 27'd8;
-                        2'd2: rq_addr_2 <= {program_counter[27:4], 3'b000} + 27'd8;
-                        2'd3: rq_addr_3 <= {program_counter[27:4], 3'b000} + 27'd8;
+                        2'd0: rq_addr_0 <= prefetch_block_addr;
+                        2'd1: rq_addr_1 <= prefetch_block_addr;
+                        2'd2: rq_addr_2 <= prefetch_block_addr;
+                        2'd3: rq_addr_3 <= prefetch_block_addr;
                     endcase
                     rq_head <= rq_head + 2'd1;
                     state <= C_PREFETCH_CLEANUP;
@@ -1241,41 +1549,16 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
             // ========================================================
             C_FINISH_DATA_READ: begin
                 case (data_addr[3:2])
-                    2'b00: raw_word = {memory_read_reg[103:96], memory_read_reg[111:104], memory_read_reg[119:112], memory_read_reg[127:120]};
-                    2'b01: raw_word = {memory_read_reg[71:64],  memory_read_reg[79:72],   memory_read_reg[87:80],   memory_read_reg[95:88]};
-                    2'b10: raw_word = {memory_read_reg[39:32],  memory_read_reg[47:40],   memory_read_reg[55:48],   memory_read_reg[63:56]};
-                    2'b11: raw_word = {memory_read_reg[7:0],    memory_read_reg[15:8],    memory_read_reg[23:16],   memory_read_reg[31:24]};
+                    2'b00: load_raw_word_r <= {memory_read_reg[103:96], memory_read_reg[111:104], memory_read_reg[119:112], memory_read_reg[127:120]};
+                    2'b01: load_raw_word_r <= {memory_read_reg[71:64],  memory_read_reg[79:72],   memory_read_reg[87:80],   memory_read_reg[95:88]};
+                    2'b10: load_raw_word_r <= {memory_read_reg[39:32],  memory_read_reg[47:40],   memory_read_reg[55:48],   memory_read_reg[63:56]};
+                    2'b11: load_raw_word_r <= {memory_read_reg[7:0],    memory_read_reg[15:8],    memory_read_reg[23:16],   memory_read_reg[31:24]};
                 endcase
-
-                case (funct3)
-                    3'b000:
-                        case (data_addr[1:0])
-                            2'b00: write_data <= {{24{raw_word[7]}},  raw_word[7:0]};
-                            2'b01: write_data <= {{24{raw_word[15]}}, raw_word[15:8]};
-                            2'b10: write_data <= {{24{raw_word[23]}}, raw_word[23:16]};
-                            2'b11: write_data <= {{24{raw_word[31]}}, raw_word[31:24]};
-                        endcase
-                    3'b100:
-                        case (data_addr[1:0])
-                            2'b00: write_data <= {24'd0, raw_word[7:0]};
-                            2'b01: write_data <= {24'd0, raw_word[15:8]};
-                            2'b10: write_data <= {24'd0, raw_word[23:16]};
-                            2'b11: write_data <= {24'd0, raw_word[31:24]};
-                        endcase
-                    3'b001:
-                        if (data_addr[1] == 1'b0) write_data <= {{16{raw_word[15]}}, raw_word[15:0]};
-                        else                      write_data <= {{16{raw_word[31]}}, raw_word[31:16]};
-                    3'b101:
-                        if (data_addr[1] == 1'b0) write_data <= {16'd0, raw_word[15:0]};
-                        else                      write_data <= {16'd0, raw_word[31:16]};
-                    3'b010:
-                        write_data <= raw_word;
-                    default:
-                        write_data <= raw_word;
-                endcase
-
-                write_enable <= 1;
-                state <= C_EXECUTE;
+                load_offset_r <= data_addr[1:0];
+                load_funct3_r <= funct3;
+                wb_return_state <= C_EXECUTE;
+                write_enable <= 0;
+                state <= C_LOAD_ALIGN;
             end
 
             // ========================================================
@@ -1325,6 +1608,8 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
 
                     cpu_ddr_wr_data_en <= 1;
                     cpu_ddr_wr_data_end <= 1;
+                    dcache_inv_en <= 1;
+                    dcache_inv_addr <= {data_addr[27:4], 3'b000};
                     state <= C_DDR_WRITE;
                 end
             end
@@ -1333,6 +1618,7 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
                 cpu_ddr_cmd_en <= 0;
                 cpu_ddr_wr_data_en <= 0;
                 cpu_ddr_wr_data_end <= 0;
+                dcache_inv_en <= 0;
                 state <= C_EXECUTE;
             end
 
@@ -1392,6 +1678,43 @@ always @(posedge ddr_user_clk or negedge sys_rst_n) begin
         dump_reg_idx <= 5'd0;
         pending_exec_state <= 0;
         cpu_done <= 0;
+        write_enable <= 0;
+        write_data <= 32'd0;
+        read1_addr <= 5'd0;
+        read2_addr <= 5'd0;
+        write_addr <= 5'd0;
+        read1_data_reg <= 32'd0;
+        read2_data_reg <= 32'd0;
+        branch_eq <= 1'b0;
+        branch_lt <= 1'b0;
+        branch_ltu <= 1'b0;
+        div_result_r <= 32'd0;
+        imm_i_reg <= 32'd0;
+        imm_s_reg <= 32'd0;
+        imm_b_reg <= 32'd0;
+        imm_j_reg <= 32'd0;
+        imm_u_reg <= 32'd0;
+        fetch_block_addr <= 27'd0;
+        prefetch_block_addr <= 27'd0;
+        mul_result_r <= 64'd0;
+        mul_accum_r <= 64'd0;
+        mul_multiplicand_r <= 64'd0;
+        mul_multiplier_r <= 32'd0;
+        mul_bit <= 6'd0;
+        mul_neg_result <= 1'b0;
+        mul_high_result <= 1'b0;
+        shift_value_r <= 32'd0;
+        shift_count_r <= 5'd0;
+        shift_mode_r <= 2'd0;
+        alu_result_r <= 32'd0;
+        wb_data_r <= 32'd0;
+        wb_return_state <= C_DDR_WAIT_READ;
+        load_raw_word_r <= 32'd0;
+        load_offset_r <= 2'd0;
+        load_funct3_r <= 3'd0;
+        load_byte_r <= 8'd0;
+        load_half_r <= 16'd0;
+        io_read_data_r <= 32'd0;
 
         rq_head <= 0; rq_tail <= 0; rq_is_data <= 0;
         pf_valid <= 0; dmem_valid <= 0; pf_ready_addr <= 27'h7FFFFFF;
@@ -1427,49 +1750,54 @@ module ICache (
 );
 
 // ---------------------------------------------------------------------------
-// Cache belleği (Gowin BSRAM olarak sentezlenir)
+// Cache belleği: data_mem BSRAM (timing kritik), tag_mem SSRAM (küçük, hız önemi yok)
 // ---------------------------------------------------------------------------
-reg [127:0] data_mem [0:255];
-reg [20:0]  tag_mem  [0:255];   // [20]=valid, [19:0]=tag
+(* ram_style = "block" *)       reg [127:0] data_mem [0:63];
+(* ram_style = "block" *)       reg [31:0]  tag_mem  [0:63];   // [22]=valid, [21:0]=tag
 
 // ---------------------------------------------------------------------------
 // Kombinasyonel hit tespiti
 // ---------------------------------------------------------------------------
-wire [7:0]  idx      = cpu_addr[11:4];
-wire [19:0] req_tag  = cpu_addr[31:12];
-wire        hit_v    = tag_mem[idx][20];
-wire [19:0] hit_tag  = tag_mem[idx][19:0];
+wire [5:0]  idx      = cpu_addr[9:4];
+wire [21:0] req_tag  = cpu_addr[31:10];
 
-assign cache_hit = hit_v & (hit_tag == req_tag);
+reg [127:0] read_line;
+reg [31:0]  tag_out;
+reg [21:0]  req_tag_reg;
+reg [1:0]   word_sel;
+reg         cache_hit_reg;
 
-// ---------------------------------------------------------------------------
-// Hit: BSRAM okuma (1 saat gecikme)
-// ---------------------------------------------------------------------------
-always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-        cpu_data  <= 32'd0;
-        cpu_valid <= 1'b0;
+always @(posedge clk) begin
+    if (cpu_req) begin
+        read_line     <= data_mem[idx];
+        tag_out       <= tag_mem[idx];
+        req_tag_reg   <= req_tag;
+        word_sel      <= cpu_addr[3:2];
+        cache_hit_reg <= 0;   // Reset: yeni istek gelince valid'i kapat
+        cpu_valid     <= 0;
     end else begin
-        cpu_valid <= 1'b0;
-        if (cpu_req & cache_hit) begin
-            case (cpu_addr[3:2])
-                2'd0: cpu_data <= data_mem[idx][31:0];
-                2'd1: cpu_data <= data_mem[idx][63:32];
-                2'd2: cpu_data <= data_mem[idx][95:64];
-                2'd3: cpu_data <= data_mem[idx][127:96];
-            endcase
-            cpu_valid <= 1'b1;
-        end
+        // BSRAM verisi yerleştikten 1 saat sonra hit kararı
+        cache_hit_reg <= tag_out[22] & (tag_out[21:0] == req_tag_reg);
+        cpu_valid     <= cache_hit_reg;
+        // Kayıtlı data çıkışı
+        case (word_sel)
+            2'd0: cpu_data <= read_line[31:0];
+            2'd1: cpu_data <= read_line[63:32];
+            2'd2: cpu_data <= read_line[95:64];
+            2'd3: cpu_data <= read_line[127:96];
+        endcase
     end
 end
+
+assign cache_hit = cache_hit_reg;
 
 // ---------------------------------------------------------------------------
 // Fill: DDR3'ten gelen 128-bit burst cache'e yaz
 // ---------------------------------------------------------------------------
 always @(posedge clk) begin
     if (fill_en) begin
-        data_mem[fill_addr[11:4]] <= fill_data;
-        tag_mem [fill_addr[11:4]] <= {1'b1, fill_addr[31:12]};
+        data_mem[fill_addr[9:4]] <= fill_data;
+        tag_mem [fill_addr[9:4]] <= {10'd0, 1'b1, fill_addr[31:10]};
     end
 end
 
@@ -1478,9 +1806,88 @@ end
 // ---------------------------------------------------------------------------
 integer ci;
 initial begin
-    for (ci = 0; ci < 256; ci = ci + 1) begin
-        tag_mem[ci]  = 21'd0;
+    for (ci = 0; ci < 64; ci = ci + 1) begin
+        tag_mem[ci]  = 32'd0;
         data_mem[ci] = 128'd0;
+    end
+end
+
+endmodule
+
+// =============================================================================
+// DATA CACHE (DCache)
+// Direct-Mapped 4KB Read-Only Cache (Write-Through / Invalidate on Write)
+// =============================================================================
+module DCache (
+    input  wire        clk,
+    input  wire        rst_n,
+    input  wire [31:0] cpu_addr,
+    input  wire        cpu_req,
+    output reg  [31:0] cpu_data,
+    output reg         cpu_valid,
+    output wire        cache_hit,
+    input  wire [31:0]  fill_addr,
+    input  wire [127:0] fill_data,
+    input  wire         fill_en,
+    input  wire [31:0]  inv_addr,
+    input  wire         inv_en
+);
+
+(* ram_style = "block" *)       reg [127:0] data_mem [0:63];
+(* ram_style = "block" *)       reg [31:0]  tag_mem  [0:63];   // [22]=valid, [21:0]=tag
+
+wire [5:0]  idx      = cpu_addr[9:4];
+wire [21:0] req_tag  = cpu_addr[31:10];
+
+reg [127:0] read_line;
+reg [31:0]  tag_out;
+reg [21:0]  req_tag_reg;
+reg [1:0]   word_sel;
+reg         cache_hit_reg;
+
+always @(posedge clk) begin
+    if (cpu_req) begin
+        read_line     <= data_mem[idx];
+        tag_out       <= tag_mem[idx];
+        req_tag_reg   <= req_tag;
+        word_sel      <= cpu_addr[3:2];
+        cache_hit_reg <= 0;
+        cpu_valid     <= 0;
+    end else begin
+        cache_hit_reg <= tag_out[22] & (tag_out[21:0] == req_tag_reg);
+        cpu_valid     <= cache_hit_reg;
+        // Kayitli data cikisi
+        case (word_sel)
+            2'd0: cpu_data <= read_line[31:0];
+            2'd1: cpu_data <= read_line[63:32];
+            2'd2: cpu_data <= read_line[95:64];
+            2'd3: cpu_data <= read_line[127:96];
+        endcase
+    end
+end
+
+assign cache_hit = cache_hit_reg;
+
+always @(posedge clk) begin
+    if (fill_en) begin
+        data_mem[fill_addr[9:4]] <= fill_data;
+    end
+end
+
+wire [5:0]  tag_wr_addr = fill_en ? fill_addr[9:4] : inv_addr[9:4];
+wire [31:0] tag_wr_data = fill_en ? {10'd0, 1'b1, fill_addr[31:10]} : 32'd0;
+
+always @(posedge clk) begin
+    if (fill_en || inv_en) begin
+        tag_mem[tag_wr_addr] <= tag_wr_data;
+    end
+end
+
+integer ci2;
+initial begin
+    for (ci2 = 0; ci2 < 64; ci2 = ci2 + 1) begin
+        tag_mem[ci2]  = 32'd0;
+        data_mem[ci2] = 128'd0;
     end
 end
 

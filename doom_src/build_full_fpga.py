@@ -3,7 +3,10 @@ import subprocess
 import sys
 import glob
 
-toolchain_dir = r"C:\Users\musta\Desktop\DOOM\reis\riscv_toolchain\xpack-riscv-none-elf-gcc-15.2.0-1\bin"
+# Scriptin bulunduğu klasöre geç ki başka yerden çalıştırıldığında path'ler bozulmasın
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+toolchain_dir = r"C:\Users\musta\Documents\riscv_toolchain\xpack-riscv-none-elf-gcc-15.2.0-1\bin"
 gcc = os.path.join(toolchain_dir, "riscv-none-elf-gcc.exe")
 objcopy = os.path.join(toolchain_dir, "riscv-none-elf-objcopy.exe")
 objdump = os.path.join(toolchain_dir, "riscv-none-elf-objdump.exe")
@@ -11,7 +14,7 @@ objdump = os.path.join(toolchain_dir, "riscv-none-elf-objdump.exe")
 cflags = [
     "-O3", "-march=rv32i", "-mabi=ilp32", "-ffreestanding",
     "-nostartfiles", "-Wl,-T,linker.ld", "-I.", "-Wl,--gc-sections", 
-    "-std=gnu99", "-Wno-implicit-function-declaration", "-Wno-implicit-int"
+    "-std=gnu99", "-Wno-implicit-function-declaration", "-Wno-implicit-int", "-DCMAP256"
 ]
 
 def main():
@@ -48,14 +51,22 @@ def main():
         print("Derleme sirasinda hata olustu!")
         sys.exit(1)
 
+    # Find next version number
+    version = 1
+    while os.path.exists(f"../doom_eburis_v{version}.bin"):
+        version += 1
+        
+    out_bin = f"../doom_eburis_v{version}.bin"
+    out_asm = f"../doom_eburis_v{version}.asm"
+
     print("ELF -> BIN donusumu yapiliyor...")
-    subprocess.run([objcopy, "-O", "binary", "doom_fpga_full.elf", "doom_fpga.bin"], check=True)
+    subprocess.run([objcopy, "-O", "binary", "doom_fpga_full.elf", out_bin], check=True)
 
     print("Assembly dökümü (objdump) olusturuluyor...")
-    with open("doom_fpga.asm", "w") as asm_file:
+    with open(out_asm, "w") as asm_file:
         subprocess.run([objdump, "-d", "doom_fpga_full.elf"], stdout=asm_file)
 
-    print("BASARILI! WAD gomulu 'doom_fpga.bin' ve 'doom_fpga.asm' olusturuldu.")
+    print(f"BASARILI! Yeni surum olusturuldu: {out_bin}")
 
 if __name__ == "__main__":
     main()

@@ -1,145 +1,135 @@
 [
  {
-  "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
+  "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
   "InstLine" : 1,
   "InstName" : "Main_Computer",
-  "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
+  "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
   "ModuleLine" : 1,
   "ModuleName" : "Main_Computer",
   "SubInsts" : [
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 111,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 123,
     "InstName" : "icache_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "ModuleLine" : 1413,
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "ModuleLine" : 1736,
     "ModuleName" : "ICache"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 127,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 139,
     "InstName" : "rpll_270_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/rpll_270/rpll_270.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/rpll_270/rpll_270.v",
     "ModuleLine" : 10,
     "ModuleName" : "rpll_270"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 133,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 145,
     "InstName" : "r_clock",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll/gowin_rpll.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/gowin_rpll/gowin_rpll.v",
     "ModuleLine" : 10,
     "ModuleName" : "Gowin_rPLL"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 140,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 152,
     "InstName" : "main_ram",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/ddr3_memory_interface/ddr3_memory_interface.v",
     "ModuleLine" : 11484,
     "ModuleName" : "DDR3_Memory_Interface_Top",
     "SubInsts" : [
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
+      "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/ddr3_memory_interface/ddr3_memory_interface.v",
       "InstLine" : 11569,
       "InstName" : "gw3_top",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
+      "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/ddr3_memory_interface/ddr3_memory_interface.v",
       "ModuleLine" : 10,
       "ModuleName" : "~GW_DDR3_PHY_MC.DDR3_Memory_Interface_Top"
      }
     ]
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 195,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 207,
     "InstName" : "debug_uart",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/UART.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/UART.v",
     "ModuleLine" : 1,
     "ModuleName" : "UART_Controller"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 217,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 229,
     "InstName" : "spi_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/SPI.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/SPI.v",
     "ModuleLine" : 1,
     "ModuleName" : "SPI_Controller"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 413,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 425,
     "InstName" : "keyboard",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/PS2_Controller.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/PS2_Controller.v",
     "ModuleLine" : 28,
     "ModuleName" : "PS2_Controller"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 434,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 448,
     "InstName" : "u_Gowin_rPLL_VGA",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll_2/gowin_rpll_2.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/gowin_rpll_2/gowin_rpll_2.v",
     "ModuleLine" : 10,
     "ModuleName" : "Gowin_rPLL_VGA"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 456,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 471,
     "InstName" : "u_hdmi",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/HDMI_Top.v",
     "ModuleLine" : 8,
     "ModuleName" : "HDMI_Top",
     "SubInsts" : [
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
-      "InstLine" : 89,
+      "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/HDMI_Top.v",
+      "InstLine" : 88,
       "InstName" : "u_dvi_tx",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/dvi_tx/dvi_tx.v",
+      "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/dvi_tx/dvi_tx.v",
       "ModuleLine" : 9,
       "ModuleName" : "DVI_TX_Top"
      },
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
-      "InstLine" : 39,
+      "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/HDMI_Top.v",
+      "InstLine" : 38,
       "InstName" : "u_vga",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/VGA.v",
+      "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/VGA.v",
       "ModuleLine" : 1,
       "ModuleName" : "VGA_Controller"
      }
     ]
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 481,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 496,
     "InstName" : "vram",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/gowin_sdpb/gowin_sdpb.v",
     "ModuleLine" : 10,
     "ModuleName" : "Gowin_SDPB_VRAM"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 539,
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 570,
     "InstName" : "cpu_register_controller",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/CPU_Registers.v",
     "ModuleLine" : 1,
-    "ModuleName" : "CPU_Registers",
-    "SubInsts" : [
-     {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
-      "InstLine" : 26,
-      "InstName" : "regfile_port1",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb_2.v",
-      "ModuleLine" : 10,
-      "ModuleName" : "Gowin_SDPB"
-     },
-     {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
-      "InstLine" : 45,
-      "InstName" : "regfile_port2",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb_2.v",
-      "ModuleLine" : 10,
-      "ModuleName" : "Gowin_SDPB"
-     }
-    ]
+    "ModuleName" : "CPU_Registers"
+   },
+   {
+    "InstFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "InstLine" : 764,
+    "InstName" : "dcache_inst",
+    "ModuleFile" : "C:/Users/musta/Desktop/DOOM/reis/src/Mainv3.v",
+    "ModuleLine" : 1821,
+    "ModuleName" : "DCache"
    }
   ]
  }

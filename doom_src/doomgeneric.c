@@ -29,7 +29,7 @@
 /* WAD is handled entirely by w_file_stdc.c via linker symbols _wad_start/_wad_end */
 
 /* ── Screen buffer ────────────────────────────────────────────── */
-uint32_t* DG_ScreenBuffer = 0;
+pixel_t* DG_ScreenBuffer = 0;
 
 /* ── Syscall stubs ────────────────────────────────────────────── */
 
@@ -61,28 +61,16 @@ void _exit(int status) { (void)status; while(1) {} }
 
 void DG_Init() {}
 
+extern uint8_t rgb332_palette[256];
+
 void DG_DrawFrame() {
-    /*
-     * Pack 4 RGB332 pixels into each 32-bit VRAM word.
-     * Pixel layout within word (matches VGA controller):
-     *   bits[31:24] = pixel 0  (leftmost)
-     *   bits[23:16] = pixel 1
-     *   bits[15: 8] = pixel 2
-     *   bits[ 7: 0] = pixel 3
-     *
-     * DOOM screen buffer: 320x200 pixels, each 0x00RRGGBB uint32_t
-     * VRAM words needed: 320*200/4 = 16,000
-     */
+    uint8_t* src = (uint8_t*)DG_ScreenBuffer;
     for (int i = 0; i < (DOOMGENERIC_RESX * DOOMGENERIC_RESY / 4); i++) {
         uint32_t word = 0;
-        for (int j = 0; j < 4; j++) {
-            uint32_t px = DG_ScreenBuffer[(i * 4) + j];
-            uint8_t r = (uint8_t)(px >> 16);
-            uint8_t g = (uint8_t)(px >>  8);
-            uint8_t b = (uint8_t)(px      );
-            uint8_t rgb332 = ((r >> 5) << 5) | ((g >> 5) << 2) | (b >> 6);
-            word |= ((uint32_t)rgb332 << ((3 - j) * 8));
-        }
+        word |= ((uint32_t)rgb332_palette[src[(i * 4) + 0]] << 24);
+        word |= ((uint32_t)rgb332_palette[src[(i * 4) + 1]] << 16);
+        word |= ((uint32_t)rgb332_palette[src[(i * 4) + 2]] << 8);
+        word |= ((uint32_t)rgb332_palette[src[(i * 4) + 3]]);
         VRAM_ADDR[i] = word;
     }
 }

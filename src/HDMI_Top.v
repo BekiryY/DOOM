@@ -10,7 +10,6 @@ module HDMI_Top (
     input  wire        tmds_clk,       // 126 MHz serial clock (5x pix_clk)
     input  wire        sys_rst_n,
 
-
     // VRAM interface (pass-through to VGA_Controller)
     output wire [13:0] vram_read_addr,
     output wire        vram_read_en,

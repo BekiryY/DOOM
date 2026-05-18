@@ -33,9 +33,12 @@ module PS2_Controller(
     // --- UART klavye girişi (key_catcher.py → COM6) ---
     input  wire        uart_key_ready,  // UART_Controller.read_done
     input  wire [7:0]  uart_key_data,   // UART_Controller.data_readed
+    // --- CPU onayı: KEY_EVENT okundu, pending bayrağını temizle ---
+    input  wire        key_consumed,    // IO 0x4010_0004 okunduğunda 1-saat pulse
     output reg  [31:0] DOOM_KEYS    = 32'd0,  // IO 0x4010_0000
     output reg  [31:0] KEY_EVENT    = 32'd0,  // IO 0x4010_0004
-    output reg         KEY_EV_VALID = 1'b0    // 1-saat pulse
+    output reg         KEY_EV_VALID = 1'b0,   // 1-saat pulse (dahili kullanım)
+    output reg         key_ev_pending = 1'b0  // IO 0x4010_0008: okunmamış event var
 );
 
 // ---------------------------------------------------------------------------
@@ -273,10 +276,12 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
         DOOM_KEYS       <= 32'd0;
         KEY_EVENT       <= 32'd0;
         KEY_EV_VALID    <= 0;
+        key_ev_pending  <= 0;
         uart_press_flag <= 0;
         uart_byte0_seen <= 0;
     end else begin
         KEY_EV_VALID <= 0;  // her saat sıfırla, pulse olarak çalışsın
+        if (key_consumed) key_ev_pending <= 0;  // CPU KEY_EVENT'i okudu, temizle
 
         // ── PS/2 Dekoderi ──────────────────────────────────────────────
         if (byte_rdy) begin
@@ -296,6 +301,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
                                 DOOM_KEYS[kd[12:8]] <= 1'b1;
                                 KEY_EVENT           <= {1'b1, 23'd0, kd[7:0]};
                                 KEY_EV_VALID        <= 1;
+                                key_ev_pending      <= 1;
                             end
                         end
                         is_ext <= 0;
@@ -313,6 +319,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
                                 DOOM_KEYS[kd[12:8]] <= 1'b1;
                                 KEY_EVENT           <= {1'b1, 23'd0, kd[7:0]};
                                 KEY_EV_VALID        <= 1;
+                                key_ev_pending      <= 1;
                             end
                         end
                         is_ext <= 0;
@@ -327,6 +334,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
                             DOOM_KEYS[kd[12:8]] <= 1'b0;
                             KEY_EVENT           <= {1'b0, 23'd0, kd[7:0]};
                             KEY_EV_VALID        <= 1;
+                            key_ev_pending      <= 1;
                         end
                     end
                     is_ext <= 0;
@@ -352,7 +360,8 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
                     DOOM_KEYS[uart_key_data[4:0]] <= uart_press_flag;
                     KEY_EVENT    <= {uart_press_flag, 23'd0,
                                      bit2doomkey(uart_key_data[4:0])};
-                    KEY_EV_VALID <= 1;
+                    KEY_EV_VALID   <= 1;
+                    key_ev_pending <= 1;
                 end
             end
         end
