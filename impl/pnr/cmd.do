@@ -1,9 +1,9 @@
--d C:\Users\musta\Desktop\DOOM\reis\impl\gwsynthesis\32bit_Computer.vg
+-d C:\Users\BEK\repos\DOOM\impl\gwsynthesis\32bit_Computer.vg
 -p GW2A-18C-PBGA256-8
 -pn GW2A-LV18PG256C8/I7
--cst C:\Users\musta\Desktop\DOOM\reis\src\32bitv2.cst
--cfg C:\Users\musta\Desktop\DOOM\reis\impl\pnr\device.cfg
--sdc C:\Users\musta\Desktop\DOOM\reis\src\32bit.sdc
+-cst C:\Users\BEK\repos\DOOM\src\32bitv2.cst
+-cfg C:\Users\BEK\repos\DOOM\impl\pnr\device.cfg
+-sdc C:\Users\BEK\repos\DOOM\src\32bit.sdc
 -bit
 -tr
 -ph
