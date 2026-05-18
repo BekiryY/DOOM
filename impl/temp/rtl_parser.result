@@ -1,171 +1,45 @@
 [
  {
-  "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
+  "InstFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
   "InstLine" : 1,
-  "InstName" : "Main_Computer",
-  "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
+  "InstName" : "CPU_Registers",
+  "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
   "ModuleLine" : 1,
-  "ModuleName" : "Main_Computer",
+  "ModuleName" : "CPU_Registers"
+ },
+ {
+  "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
+  "InstLine" : 12795,
+  "InstName" : "integer_division_signed",
+  "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
+  "ModuleLine" : 12795,
+  "ModuleName" : "integer_division_signed",
   "SubInsts" : [
    {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 111,
-    "InstName" : "icache_inst",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "ModuleLine" : 1488,
-    "ModuleName" : "ICache"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 127,
-    "InstName" : "rpll_270_inst",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/rpll_270/rpll_270.v",
+    "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
+    "InstLine" : 12812,
+    "InstName" : "integer_division_inst",
+    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
     "ModuleLine" : 10,
-    "ModuleName" : "rpll_270"
-   },
+    "ModuleName" : "(integer_division)/(integer_division_signed)"
+   }
+  ]
+ },
+ {
+  "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
+  "InstLine" : 12256,
+  "InstName" : "integer_division_uns",
+  "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
+  "ModuleLine" : 12256,
+  "ModuleName" : "integer_division_uns",
+  "SubInsts" : [
    {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 133,
-    "InstName" : "r_clock",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/gowin_rpll/gowin_rpll.v",
+    "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
+    "InstLine" : 12273,
+    "InstName" : "integer_division_inst",
+    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
     "ModuleLine" : 10,
-    "ModuleName" : "Gowin_rPLL"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 140,
-    "InstName" : "main_ram",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/ddr3_memory_interface/ddr3_memory_interface.v",
-    "ModuleLine" : 11484,
-    "ModuleName" : "DDR3_Memory_Interface_Top",
-    "SubInsts" : [
-     {
-      "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/ddr3_memory_interface/ddr3_memory_interface.v",
-      "InstLine" : 11569,
-      "InstName" : "gw3_top",
-      "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/ddr3_memory_interface/ddr3_memory_interface.v",
-      "ModuleLine" : 10,
-      "ModuleName" : "~GW_DDR3_PHY_MC.DDR3_Memory_Interface_Top"
-     }
-    ]
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 195,
-    "InstName" : "debug_uart",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/UART.v",
-    "ModuleLine" : 1,
-    "ModuleName" : "UART_Controller"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 217,
-    "InstName" : "spi_inst",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/SPI.v",
-    "ModuleLine" : 1,
-    "ModuleName" : "SPI_Controller"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 413,
-    "InstName" : "keyboard",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/PS2_Controller.v",
-    "ModuleLine" : 28,
-    "ModuleName" : "PS2_Controller"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 434,
-    "InstName" : "u_Gowin_rPLL_VGA",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/gowin_rpll_2/gowin_rpll_2.v",
-    "ModuleLine" : 10,
-    "ModuleName" : "Gowin_rPLL_VGA"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 457,
-    "InstName" : "u_hdmi",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/HDMI_Top.v",
-    "ModuleLine" : 8,
-    "ModuleName" : "HDMI_Top",
-    "SubInsts" : [
-     {
-      "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/HDMI_Top.v",
-      "InstLine" : 88,
-      "InstName" : "u_dvi_tx",
-      "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/dvi_tx/dvi_tx.v",
-      "ModuleLine" : 9,
-      "ModuleName" : "DVI_TX_Top"
-     },
-     {
-      "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/HDMI_Top.v",
-      "InstLine" : 38,
-      "InstName" : "u_vga",
-      "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/VGA.v",
-      "ModuleLine" : 1,
-      "ModuleName" : "VGA_Controller"
-     }
-    ]
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 482,
-    "InstName" : "vram",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/gowin_sdpb/gowin_sdpb.v",
-    "ModuleLine" : 10,
-    "ModuleName" : "Gowin_SDPB_VRAM"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 547,
-    "InstName" : "cpu_register_controller",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/CPU_Registers.v",
-    "ModuleLine" : 1,
-    "ModuleName" : "CPU_Registers"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 670,
-    "InstName" : "div_uns_inst",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/integer_division_uns.v",
-    "ModuleLine" : 12256,
-    "ModuleName" : "integer_division_uns",
-    "SubInsts" : [
-     {
-      "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/integer_division_uns.v",
-      "InstLine" : 12273,
-      "InstName" : "integer_division_inst",
-      "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/integer_division_uns.v",
-      "ModuleLine" : 10,
-      "ModuleName" : "(integer_division)/(integer_division_uns)"
-     }
-    ]
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 679,
-    "InstName" : "div_sgn_inst",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/integer_division_signed.v",
-    "ModuleLine" : 12795,
-    "ModuleName" : "integer_division_signed",
-    "SubInsts" : [
-     {
-      "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/integer_division_signed.v",
-      "InstLine" : 12812,
-      "InstName" : "integer_division_inst",
-      "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/integer_division_signed.v",
-      "ModuleLine" : 10,
-      "ModuleName" : "(integer_division)/(integer_division_signed)"
-     }
-    ]
-   },
-   {
-    "InstFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "InstLine" : 718,
-    "InstName" : "dcache_inst",
-    "ModuleFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/kim_jong_un/src/Mainv3.v",
-    "ModuleLine" : 1574,
-    "ModuleName" : "DCache"
+    "ModuleName" : "(integer_division)/(integer_division_uns)"
    }
   ]
  }
