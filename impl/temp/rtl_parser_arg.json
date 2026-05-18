@@ -1,0 +1,69 @@
+{
+ "Device" : "GW2A-18C",
+ "Files" : [
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/CPU_Registers.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/HDMI_Top.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/Mainv3.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/PS2_Controller.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/SPI.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/UART.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/VGA.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/ddr3_memory_interface/ddr3_memory_interface.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/dvi_tx/dvi_tx.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/gowin_rpll/gowin_rpll.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/gowin_rpll_2/gowin_rpll_2.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/gowin_sdpb/gowin_sdpb.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/rpll_270/rpll_270.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/src/gowin_sdpb/gowin_sdpb_2.v",
+   "Type" : "verilog"
+  }
+ ],
+ "IncludePath" : [
+
+ ],
+ "LoopLimit" : 2000,
+ "ResultFile" : "C:/Users/BEK/Desktop/CustomRISCVComputerOnFpga2/CustomRISCVComputerOnFpga2/reis/reis2/impl/temp/rtl_parser.result",
+ "Top" : "",
+ "VerilogStd" : "verilog_2001",
+ "VhdlStd" : "vhdl_93"
+}
