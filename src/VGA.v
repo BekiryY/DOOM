@@ -42,6 +42,7 @@ wire [7:0] pixel_y  = v_offset[8:1];                     // divide by 2 → 0 to
 
 wire [15:0] absolute_pixel = ({8'd0, pixel_y} * 16'd320) + {7'd0, pixel_x};
 
+
 // VRAM handles 32 bits (4 pixels) per address
 assign vram_read_addr = absolute_pixel[15:2]; 
 assign vram_read_en   = image_active;
