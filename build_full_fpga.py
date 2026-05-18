@@ -13,7 +13,7 @@ objcopy = os.path.join(toolchain_dir, "riscv-none-elf-objcopy.exe")
 objdump = os.path.join(toolchain_dir, "riscv-none-elf-objdump.exe")
 
 cflags = [
-    "-O3", "-march=rv32i", "-mabi=ilp32", "-ffreestanding",
+    "-O3", "-march=rv32im", "-mabi=ilp32", "-ffreestanding",
     "-nostartfiles", "-Wl,-T,linker.ld", "-I.", "-Wl,--gc-sections", 
     "-std=gnu99", "-Wno-implicit-function-declaration", "-Wno-implicit-int"
 ]
