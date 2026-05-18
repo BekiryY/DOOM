@@ -53,7 +53,7 @@ def main():
         sys.exit(1)
 
     # Find next version number
-    version = 1
+    version = 10
     while os.path.exists(f"../../doom_eburis_v{version}.bin"):
         version += 1
         
