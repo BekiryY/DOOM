@@ -18,6 +18,35 @@ Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_rpll_2\gowin_rpll_2.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\fb_dma.v'
+Analyzing Verilog file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_crc32.v'
+Analyzing Verilog file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v'
+Analyzing included file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_define.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v":374)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v":374)
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_0\gw_ao_top_define.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v":374)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v":374)
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_0\gw_ao_init.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v":374)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v":374)
+Analyzing Verilog file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v'
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_0\gw_ao_top_define.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+Analyzing Verilog file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v'
+Analyzing included file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_define.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_0\gw_ao_top_define.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_0\gw_ao_expression.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_0\gw_ao_parameter.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_0\gw_ao_init.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Analyzing Verilog file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v'
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_control\gw_con_top_define.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v":377)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v":377)
+Analyzing included file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\ao_control\gw_con_parameter.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v":377)
+Back to file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v":377)
+Analyzing Verilog file 'B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\gw_jtag.v'
+Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\gw_gao_top.v'
 Compiling module 'Main_Computer'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":1)
 Extracting RAM for identifier 'line_buf'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":643)
 Compiling module 'ICache'("C:\Users\BEK\repos\DOOM\src\ICache.v":11)
@@ -42,6 +71,18 @@ Extracting RAM for identifier 'data_mem'("C:\Users\BEK\repos\DOOM\src\DCache.v":
 Extracting RAM for identifier 'tag_mem'("C:\Users\BEK\repos\DOOM\src\DCache.v":21)
 Compiling module 'fb_dma'("C:\Users\BEK\repos\DOOM\src\fb_dma.v":18)
 WARN  (EX3791) : Expression size 33 truncated to fit in target size 8("C:\Users\BEK\repos\DOOM\src\fb_dma.v":134)
+Compiling module 'gw_gao'("C:\Users\BEK\repos\DOOM\impl\gwsynthesis\RTL_GAO\gw_gao_top.v":1)
+Compiling module 'GW_JTAG'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\gw_jtag.v":1)
+Compiling module '**'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_CON\gw_con_top.v":377)
+Compiling module '**'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (EX2213) : Found if-condition inside asynchronous set or reset block, synthesis - simulation differences may occur("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Compiling module '**'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+Extracting RAM for identifier '**'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+WARN  (EX2213) : Found if-condition inside asynchronous set or reset block, synthesis - simulation differences may occur("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+Compiling module '**'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_crc32.v":74)
+Compiling module '**'("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_match.v":374)
+WARN  (EX3791) : Expression size ** truncated to fit in target size **("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+Trying to combine GAO to RTL design
 NOTE  (EX0101) : Current top module is "Main_Computer"
 [5%] Running netlist conversion ...
 Running device independent optimization ...
@@ -57,6 +98,102 @@ Running technical mapping ...
 [60%] Tech-Mapping Phase 0 completed
 [65%] Tech-Mapping Phase 1 completed
 [75%] Tech-Mapping Phase 2 completed
+WARN  (AG0100) : Find logical loop signal : "n3365"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "n256"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "n3365"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "n3367"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "n256"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "n3367"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "mem_addr_inc_en"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+WARN  (AG0100) : Find logical loop signal : "mem_addr_inc_en"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+WARN  (AG0100) : Find logical loop signal : "mem_addr_inc_en"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_mem_ctrl.v":1256)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_init"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "internal_reg_start"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_start"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_start"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "internal_reg_trig_level_max[1]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_trig_level_max[1]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "internal_reg_trig_level_max[1]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[8]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[8]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[8]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[7]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[7]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[7]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[6]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[6]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[6]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[5]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[5]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[5]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[4]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[4]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[4]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[3]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[3]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[3]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[2]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[2]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[2]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[1]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[1]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[1]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[0]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[0]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_max[0]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[8]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[8]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[8]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[7]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[7]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[7]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[6]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[6]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[6]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[5]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[5]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[5]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[4]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[4]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[4]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[3]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[3]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[3]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[2]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[2]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0100) : Find logical loop signal : "capture_mem_addr_rem[2]"("B:\Gowin\Gowin_V1.9.11.03_x64\IDE\data\ipcores\GAO\GW_AO_0\gw_ao_top.v":3042)
+WARN  (AG0101) : The netlist is not one directed acyclic graph
 [80%] Tech-Mapping Phase 3 completed
 [90%] Tech-Mapping Phase 4 completed
 [95%] Generate netlist file "C:\Users\BEK\repos\DOOM\impl\gwsynthesis\32bit_Computer.vg" completed

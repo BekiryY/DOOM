@@ -4,6 +4,7 @@
 -cst C:\Users\BEK\repos\DOOM\src\32bitv2.cst
 -cfg C:\Users\BEK\repos\DOOM\impl\pnr\device.cfg
 -sdc C:\Users\BEK\repos\DOOM\src\32bit.sdc
+-gao_crc 0101000101000001
 -bit
 -tr
 -ph
@@ -16,3 +17,4 @@
 -correct_hold 1
 -route_maxfan 23
 -global_freq 100.000
+-rtl_gao

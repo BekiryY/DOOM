@@ -2,7 +2,7 @@
 <GAO_CONFIG>
     <Version>3.0</Version>
     <Mode>Standard</Mode>
-    <AoCore index="0" sample_clock="ddr_user_clk" trig_type="0" storage_depth="2048" window_num="1" capture_amount="2048" implementation="0" trigger_pos="0" module_name="Main_Computer" force_trigger_by_falling_edge="false" capture_init_data_enabled="true">
+    <AoCore index="0" sample_clock="ddr_user_clk" trig_type="0" storage_depth="512" window_num="1" capture_amount="512" implementation="0" trigger_pos="0" module_name="Main_Computer" force_trigger_by_falling_edge="false" capture_init_data_enabled="true">
         <SignalList>
             <Signal capture_enable="true">boot_done</Signal>
             <Signal capture_enable="true">ddr_calib_complete</Signal>
@@ -125,5 +125,5 @@
             <Expression>M2</Expression>
         </Expressions>
     </AoCore>
-    <GAO_ID>0100011011100001</GAO_ID>
+    <GAO_ID>0101000101000001</GAO_ID>
 </GAO_CONFIG>
