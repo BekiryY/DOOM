@@ -28,7 +28,7 @@ SECTIONS {
     .wad : {
         . = ALIGN(4);
         _wad_start = .;
-        KEEP(*(.wad_blob))
+        KEEP(doom1.o(.data))    /* ← explicitly grab objcopy output */
         _wad_end = .;
         . = ALIGN(4);
     } > RAM
