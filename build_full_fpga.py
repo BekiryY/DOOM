@@ -5,7 +5,7 @@ import glob
 
 # Scriptin bulunduğu klasöre geç ki başka yerden çalıştırıldığında path'ler bozulmasın
 base_dir = os.path.dirname(os.path.abspath(__file__))
-os.chdir(os.path.join(base_dir, "doom_codes", "doomgeneric"))
+os.chdir(os.path.join(base_dir, "doom_codes_linkedn", "doomgeneric"))
 
 toolchain_dir = r"C:\Users\musta\Documents\riscv_toolchain\xpack-riscv-none-elf-gcc-15.2.0-1\bin"
 gcc = os.path.join(toolchain_dir, "riscv-none-elf-gcc.exe")
@@ -14,7 +14,8 @@ objdump = os.path.join(toolchain_dir, "riscv-none-elf-objdump.exe")
 
 cflags = [
     "-O3", "-march=rv32im", "-mabi=ilp32", "-ffreestanding",
-    "-nostartfiles", "-Wl,-T,linker.ld", "-I.", "-Wl,--gc-sections", 
+    "-nostartfiles", "-Wl,-T,linker.ld", "-I.", "-Wl,--gc-sections",
+    "-Wl,-u,_binary_doom1_wad_start",   # ← add this
     "-std=gnu99", "-Wno-implicit-function-declaration", "-Wno-implicit-int"
 ]
 
