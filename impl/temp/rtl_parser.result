@@ -125,7 +125,7 @@
      },
      {
       "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 220,
+      "InstLine" : 231,
       "InstName" : "dcache_inst",
       "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
       "ModuleLine" : 5,

@@ -148,6 +148,11 @@ reg [1:0]  rq_tail = 0;
 reg [3:0]  rq_is_data = 0; // 1 = Data Load, 0 = Instruction/Prefetch
 reg [26:0] rq_addr_0=0, rq_addr_1=0, rq_addr_2=0, rq_addr_3=0;
 
+// Queue protection: keep one slot empty to distinguish full vs empty.
+// This prevents overwriting request metadata when DDR latency overlaps CPU requests.
+wire [1:0] rq_head_next = rq_head + 2'd1;
+wire       rq_full      = (rq_head_next == rq_tail);
+
 reg [127:0] pf_read_reg = 0;
 reg [26:0]  pf_ready_addr = 27'h7FFFFFF; // Initializes to invalid address
 reg         pf_valid = 0;
@@ -164,16 +169,22 @@ reg         dmem_valid = 0;
 // Leading-zero early exit: we only iterate for (32 - lz_skip) cycles,
 // which for typical DOOM operands (<=16-bit) saves ~16 cycles per divide.
 
-reg         div_is_rem      = 0;  // 1=REM/REMU, 0=DIV/DIVU
-reg         div_is_signed   = 0;  // 1=DIV/REM (signed)
-reg         div_quot_neg    = 0;  // quotient  must be negated at end
-reg         div_rem_neg     = 0;  // remainder must be negated at end
-reg [5:0]   div_iter        = 0;  // current iteration (counts down)
-reg [5:0]   div_total_iter  = 0;  // total iterations = 32 - lz_skip
+reg         div_is_rem      = 0;
+reg         div_is_signed   = 0;
+reg         div_quot_neg    = 0;
+reg         div_rem_neg     = 0;
+reg [5:0]   div_iter        = 0;
+reg [5:0]   div_total_iter  = 0;
 reg [31:0]  div_quotient    = 0;
-reg [32:0]  div_partial     = 0;  // 33-bit partial remainder (MSB = sign)
-reg [31:0]  div_divisor_r   = 0;  // magnitude of divisor
-reg [31:0]  div_dividend_r  = 0;  // magnitude of dividend (shifted out)
+reg [32:0]  div_partial     = 0;
+reg [31:0]  div_divisor_r   = 0;
+reg [31:0]  div_dividend_r  = 0;
+
+// Pre-computed ALU result (filled in C_REG_FETCH_WAIT to break
+// the read1_data_reg→write_data timing critical path).
+// C_EXEC_R_TYPE / C_EXEC_I_TYPE just copy from this register.
+reg [31:0]  alu_result_r    = 0;
+reg [31:0]  alu_result_i    = 0;
 
 // Leading-zero count helper (used combinatorially in C_DIV_SETUP)
 function automatic [5:0] count_leading_zeros;
@@ -377,7 +388,8 @@ always @(posedge clk or negedge rst_n) begin
             end
 
             C_LOAD_INSTR: begin
-                write_enable <= 0;
+                write_enable    <= 0;
+                cpu_ddr_cmd_en  <= 0; // clears opportunistic prefetch pulse
                 case (program_counter[3:2])
                     2'b00: current_instr <= first_instr;
                     2'b01: current_instr <= second_instr;
@@ -403,7 +415,7 @@ always @(posedge clk or negedge rst_n) begin
                     fourth_instr <= {pf_read_reg[7:0],    pf_read_reg[15:8],    pf_read_reg[23:16],   pf_read_reg[31:24]};
                     state <= C_LOAD_INSTR;
                 end
-                else if (ddr_cmd_ready) begin
+                else if (ddr_cmd_ready && !rq_full) begin
                     cpu_ddr_cmd      <= 3'b001;
                     cpu_ddr_cmd_en   <= 1;
                     cpu_user_addr    <= {program_counter[27:4], 3'b000};
@@ -454,7 +466,7 @@ always @(posedge clk or negedge rst_n) begin
                     write_enable <= 1;
                     state <= return_state;
                 end
-                else if (ddr_cmd_ready) begin
+                else if (ddr_cmd_ready && !rq_full) begin
                     cpu_ddr_cmd    <= 3'b001;
                     cpu_ddr_cmd_en <= 1;
                     cpu_user_addr  <= {data_addr[27:4], 3'b000};
@@ -540,11 +552,48 @@ always @(posedge clk or negedge rst_n) begin
             C_REG_FETCH_WAIT: begin
                 read1_data_reg <= read1_data;
                 read2_data_reg <= read2_data;
-                // Pre-compute comparison flags to cut critical paths
+
+                // Pre-compute comparison flags (branch)
                 rs2_is_zero  <= (read2_data == 32'd0);
                 branch_eq    <= (read1_data == read2_data);
                 branch_lt    <= ($signed(read1_data) < $signed(read2_data));
                 branch_ltu   <= (read1_data < read2_data);
+
+                // ── Pre-compute full ALU results from FRESH register-file wires ──
+                // Uses read1_data / read2_data directly (not the re-registered copy).
+                // This breaks the read1_data_reg→ALU→write_data timing path:
+                // C_EXEC_R_TYPE and C_EXEC_I_TYPE become trivial register copies.
+                //
+                // R-type (reg op reg)
+                case (funct3)
+                    3'b000: alu_result_r <= (funct7 == 7'b0100000)
+                                            ? (read1_data - read2_data)
+                                            : (read1_data + read2_data);
+                    3'b001: alu_result_r <= read1_data << read2_data[4:0];
+                    3'b010: alu_result_r <= ($signed(read1_data) < $signed(read2_data)) ? 32'd1 : 32'd0;
+                    3'b011: alu_result_r <= (read1_data < read2_data) ? 32'd1 : 32'd0;
+                    3'b100: alu_result_r <= read1_data ^ read2_data;
+                    3'b101: alu_result_r <= (funct7 == 7'b0100000)
+                                            ? $signed(read1_data) >>> read2_data[4:0]
+                                            : read1_data >> read2_data[4:0];
+                    3'b110: alu_result_r <= read1_data | read2_data;
+                    3'b111: alu_result_r <= read1_data & read2_data;
+                endcase
+
+                // I-type (reg op immediate)
+                case (funct3)
+                    3'b000: alu_result_i <= read1_data + imm_i;
+                    3'b001: alu_result_i <= read1_data << imm_i[4:0];
+                    3'b010: alu_result_i <= ($signed(read1_data) < $signed(imm_i)) ? 32'd1 : 32'd0;
+                    3'b011: alu_result_i <= (read1_data < imm_i) ? 32'd1 : 32'd0;
+                    3'b100: alu_result_i <= read1_data ^ imm_i;
+                    3'b101: alu_result_i <= (current_instr[30])
+                                            ? $signed(read1_data) >>> imm_i[4:0]
+                                            : read1_data >> imm_i[4:0];
+                    3'b110: alu_result_i <= read1_data | imm_i;
+                    3'b111: alu_result_i <= read1_data & imm_i;
+                endcase
+
                 state <= pending_exec_state;
             end
 
@@ -677,47 +726,18 @@ always @(posedge clk or negedge rst_n) begin
                 end
             end
 
+            // ── ALU result is pre-computed in C_REG_FETCH_WAIT ──────────
+            // These states are now trivial register copies (sub-ns path).
             C_EXEC_R_TYPE: begin
+                write_data   <= alu_result_r;
                 write_enable <= 1;
-                case (funct3)
-                    3'b000: begin
-                        if (funct7 == 7'b0100000) write_data <= read1_data_reg - read2_data_reg;
-                        else write_data <= read1_data_reg + read2_data_reg;
-                    end
-                    3'b001: write_data <= read1_data_reg << read2_data_reg[4:0];
-                    3'b010: write_data <= ($signed(read1_data_reg) < $signed(read2_data_reg)) ? 32'd1 : 32'd0;
-                    3'b011: write_data <= (read1_data_reg < read2_data_reg) ? 32'd1 : 32'd0;
-                    3'b100: write_data <= read1_data_reg ^ read2_data_reg;
-                    3'b101: begin
-                        if (funct7 == 7'b0100000)
-                            write_data <= $signed(read1_data_reg) >>> read2_data_reg[4:0];
-                        else
-                            write_data <= read1_data_reg >> read2_data_reg[4:0];
-                    end
-                    3'b110: write_data <= read1_data_reg | read2_data_reg;
-                    3'b111: write_data <= read1_data_reg & read2_data_reg;
-                endcase
-                state <= return_state;
+                state        <= return_state;
             end
 
             C_EXEC_I_TYPE: begin
+                write_data   <= alu_result_i;
                 write_enable <= 1;
-                case (funct3)
-                    3'b000: write_data <= read1_data_reg + imm_i;
-                    3'b001: write_data <= read1_data_reg << imm_i[4:0];
-                    3'b010: write_data <= ($signed(read1_data_reg) < $signed(imm_i)) ? 32'd1 : 32'd0;
-                    3'b011: write_data <= (read1_data_reg < imm_i) ? 32'd1 : 32'd0;
-                    3'b100: write_data <= read1_data_reg ^ imm_i;
-                    3'b101: begin
-                        if (current_instr[30] == 1'b1)
-                            write_data <= $signed(read1_data_reg) >>> imm_i[4:0];
-                        else
-                            write_data <= read1_data_reg >> imm_i[4:0];
-                    end
-                    3'b110: write_data <= read1_data_reg | imm_i;
-                    3'b111: write_data <= read1_data_reg & imm_i;
-                endcase
-                state <= return_state;
+                state        <= return_state;
             end
 
             C_EXEC_LOAD: begin
@@ -839,12 +859,29 @@ always @(posedge clk or negedge rst_n) begin
             C_EXECUTE: begin
                 write_enable <= 0;
 
+                // Non-blocking sequential prefetch.
+                // Old code stalled in C_PREFETCH_ISSUE whenever PC[3:2] == 00.
+                // Here the CPU only launches prefetch if DDR accepts it immediately;
+                // otherwise it continues execution and lets ICache miss logic fetch later.
+                if ((program_counter[3:2] == 2'b00) && ddr_cmd_ready && !rq_full) begin
+                    cpu_ddr_cmd    <= 3'b001;
+                    cpu_ddr_cmd_en <= 1;
+                    cpu_user_addr  <= {program_counter[27:4], 3'b000} + 27'd8;
+
+                    rq_is_data[rq_head] <= 1'b0;
+                    case (rq_head)
+                        2'd0: rq_addr_0 <= {program_counter[27:4], 3'b000} + 27'd8;
+                        2'd1: rq_addr_1 <= {program_counter[27:4], 3'b000} + 27'd8;
+                        2'd2: rq_addr_2 <= {program_counter[27:4], 3'b000} + 27'd8;
+                        2'd3: rq_addr_3 <= {program_counter[27:4], 3'b000} + 27'd8;
+                    endcase
+                    rq_head <= rq_head + 2'd1;
+                end
+
                 program_counter <= program_counter + 32'd4;
                 is_instruction_fetch <= 1;
 
-                if (program_counter[3:2] == 2'b00) begin
-                    state <= C_PREFETCH_ISSUE;
-                end else if (program_counter[3:2] == 2'b11) begin
+                if (program_counter[3:2] == 2'b11) begin
                     state <= C_DDR_WAIT_READ;
                 end else begin
                     state <= C_LOAD_INSTR;
@@ -853,7 +890,7 @@ always @(posedge clk or negedge rst_n) begin
 
             // --- THE BACKGROUND PREFETCHER STATES ---
             C_PREFETCH_ISSUE: begin
-                if (ddr_cmd_ready) begin
+                if (ddr_cmd_ready && !rq_full) begin
                     cpu_ddr_cmd <= 3'b001;
                     cpu_ddr_cmd_en <= 1;
                     cpu_user_addr <= {program_counter[27:4], 3'b000} + 27'd8;

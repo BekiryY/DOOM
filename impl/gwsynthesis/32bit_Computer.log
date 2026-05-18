@@ -1,4 +1,5 @@
 GowinSynthesis start
+Reading property constraint file "C:\Users\BEK\repos\DOOM\src\synthesis_constraints.gsc"
 Running parser ...
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\CPU_Registers.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\DCache.v'
@@ -18,10 +19,10 @@ Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\fb_dma.v'
 Compiling module 'Main_Computer'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":1)
-Extracting RAM for identifier 'line_buf'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":639)
+Extracting RAM for identifier 'line_buf'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":643)
 Compiling module 'ICache'("C:\Users\BEK\repos\DOOM\src\ICache.v":11)
-Extracting RAM for identifier 'data_mem'("C:\Users\BEK\repos\DOOM\src\ICache.v":30)
-Extracting RAM for identifier 'tag_mem'("C:\Users\BEK\repos\DOOM\src\ICache.v":31)
+Extracting RAM for identifier 'data_mem'("C:\Users\BEK\repos\DOOM\src\ICache.v":31)
+Extracting RAM for identifier 'tag_mem'("C:\Users\BEK\repos\DOOM\src\ICache.v":32)
 Compiling module 'rpll_270'("C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v":10)
 Compiling module 'Gowin_rPLL'("C:\Users\BEK\repos\DOOM\src\gowin_rpll\gowin_rpll.v":10)
 Compiling module 'DDR3_Memory_Interface_Top'("C:\Users\BEK\repos\DOOM\src\ddr3_memory_interface\ddr3_memory_interface.v":11484)

@@ -21,6 +21,7 @@
         <File path="C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v" type="verilog"/>
         <File path="C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v" type="verilog"/>
         <File path="C:\Users\BEK\repos\DOOM\src\fb_dma.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\synthesis_constraints.gsc" type="gsc"/>
     </FileList>
     <OptionList>
         <Option type="disable_insert_pad" value="0"/>
