@@ -6,7 +6,15 @@
    "Type" : "verilog"
   },
   {
+   "Path" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
+   "Type" : "verilog"
+  },
+  {
    "Path" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/repos/DOOM/src/ICache.v",
    "Type" : "verilog"
   },
   {
@@ -27,6 +35,10 @@
   },
   {
    "Path" : "C:/Users/BEK/repos/DOOM/src/VGA.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
    "Type" : "verilog"
   },
   {

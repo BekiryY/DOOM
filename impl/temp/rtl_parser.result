@@ -9,15 +9,15 @@
   "SubInsts" : [
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 111,
+    "InstLine" : 120,
     "InstName" : "icache_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "ModuleLine" : 1488,
+    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ICache.v",
+    "ModuleLine" : 11,
     "ModuleName" : "ICache"
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 127,
+    "InstLine" : 136,
     "InstName" : "rpll_270_inst",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/rpll_270/rpll_270.v",
     "ModuleLine" : 10,
@@ -25,7 +25,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 133,
+    "InstLine" : 142,
     "InstName" : "r_clock",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll/gowin_rpll.v",
     "ModuleLine" : 10,
@@ -33,7 +33,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 140,
+    "InstLine" : 149,
     "InstName" : "main_ram",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
     "ModuleLine" : 11484,
@@ -51,7 +51,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 195,
+    "InstLine" : 204,
     "InstName" : "debug_uart",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/UART.v",
     "ModuleLine" : 1,
@@ -59,7 +59,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 217,
+    "InstLine" : 226,
     "InstName" : "spi_inst",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/SPI.v",
     "ModuleLine" : 1,
@@ -67,7 +67,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 413,
+    "InstLine" : 422,
     "InstName" : "keyboard",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/PS2_Controller.v",
     "ModuleLine" : 28,
@@ -75,7 +75,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 434,
+    "InstLine" : 443,
     "InstName" : "u_Gowin_rPLL_VGA",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll_2/gowin_rpll_2.v",
     "ModuleLine" : 10,
@@ -83,7 +83,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 457,
+    "InstLine" : 466,
     "InstName" : "u_hdmi",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
     "ModuleLine" : 8,
@@ -109,63 +109,73 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 482,
+    "InstLine" : 512,
+    "InstName" : "u_cpu",
+    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
+    "ModuleLine" : 1,
+    "ModuleName" : "cpu",
+    "SubInsts" : [
+     {
+      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
+      "InstLine" : 62,
+      "InstName" : "cpu_register_controller",
+      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
+      "ModuleLine" : 1,
+      "ModuleName" : "CPU_Registers"
+     },
+     {
+      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
+      "InstLine" : 175,
+      "InstName" : "div_uns_inst",
+      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
+      "ModuleLine" : 12256,
+      "ModuleName" : "integer_division_uns",
+      "SubInsts" : [
+       {
+        "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
+        "InstLine" : 12273,
+        "InstName" : "integer_division_inst",
+        "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
+        "ModuleLine" : 10,
+        "ModuleName" : "(integer_division)/(integer_division_uns)"
+       }
+      ]
+     },
+     {
+      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
+      "InstLine" : 184,
+      "InstName" : "div_sgn_inst",
+      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
+      "ModuleLine" : 12795,
+      "ModuleName" : "integer_division_signed",
+      "SubInsts" : [
+       {
+        "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
+        "InstLine" : 12812,
+        "InstName" : "integer_division_inst",
+        "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
+        "ModuleLine" : 10,
+        "ModuleName" : "(integer_division)/(integer_division_signed)"
+       }
+      ]
+     },
+     {
+      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
+      "InstLine" : 223,
+      "InstName" : "dcache_inst",
+      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
+      "ModuleLine" : 5,
+      "ModuleName" : "DCache"
+     }
+    ]
+   },
+   {
+    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
+    "InstLine" : 561,
     "InstName" : "vram",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
     "ModuleLine" : 10,
     "ModuleName" : "Gowin_SDPB_VRAM"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 547,
-    "InstName" : "cpu_register_controller",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
-    "ModuleLine" : 1,
-    "ModuleName" : "CPU_Registers"
-   },
-   {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 670,
-    "InstName" : "div_uns_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
-    "ModuleLine" : 12256,
-    "ModuleName" : "integer_division_uns",
-    "SubInsts" : [
-     {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
-      "InstLine" : 12273,
-      "InstName" : "integer_division_inst",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
-      "ModuleLine" : 10,
-      "ModuleName" : "(integer_division)/(integer_division_uns)"
-     }
-    ]
-   },
-   {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 679,
-    "InstName" : "div_sgn_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
-    "ModuleLine" : 12795,
-    "ModuleName" : "integer_division_signed",
-    "SubInsts" : [
-     {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
-      "InstLine" : 12812,
-      "InstName" : "integer_division_inst",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
-      "ModuleLine" : 10,
-      "ModuleName" : "(integer_division)/(integer_division_signed)"
-     }
-    ]
-   },
-   {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 718,
-    "InstName" : "dcache_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "ModuleLine" : 1574,
-    "ModuleName" : "DCache"
    }
   ]
  }

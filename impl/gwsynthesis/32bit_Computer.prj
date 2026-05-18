@@ -4,27 +4,30 @@
     <Version>beta</Version>
     <Device id="GW2A-18C" package="PBGA256" speed="8" partNumber="GW2A-LV18PG256C8/I7"/>
     <FileList>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\CPU_Registers.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\HDMI_Top.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\Mainv3.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\PS2_Controller.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\SPI.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\UART.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\VGA.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\ddr3_memory_interface\ddr3_memory_interface.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\dvi_tx\dvi_tx.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\gowin_rpll\gowin_rpll.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\gowin_rpll_2\gowin_rpll_2.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\gowin_sdpb\gowin_sdpb.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\rpll_270\rpll_270.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\integer_division_uns.v" type="verilog"/>
-        <File path="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\integer_division_signed.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\CPU_Registers.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\DCache.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\HDMI_Top.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\ICache.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\Mainv3.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\PS2_Controller.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\SPI.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\UART.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\VGA.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\cpu.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\ddr3_memory_interface\ddr3_memory_interface.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\dvi_tx\dvi_tx.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\gowin_rpll\gowin_rpll.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\gowin_rpll_2\gowin_rpll_2.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\integer_division_signed.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\integer_division_uns.v" type="verilog"/>
+        <File path="C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v" type="verilog"/>
     </FileList>
     <OptionList>
         <Option type="disable_insert_pad" value="0"/>
         <Option type="global_freq" value="100.000"/>
         <Option type="looplimit" value="2000"/>
-        <Option type="output_file" value="C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\gwsynthesis\32bit_Computer.vg"/>
+        <Option type="output_file" value="C:\Users\BEK\repos\DOOM\impl\gwsynthesis\32bit_Computer.vg"/>
         <Option type="print_all_synthesis_warning" value="0"/>
         <Option type="ram_rw_check" value="0"/>
         <Option type="vcc" value="1.0"/>

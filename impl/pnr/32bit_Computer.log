@@ -1,7 +1,7 @@
-Reading netlist file: "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\gwsynthesis\32bit_Computer.vg"
-Parsing netlist file "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\gwsynthesis\32bit_Computer.vg" completed
+Reading netlist file: "C:\Users\BEK\repos\DOOM\impl\gwsynthesis\32bit_Computer.vg"
+Parsing netlist file "C:\Users\BEK\repos\DOOM\impl\gwsynthesis\32bit_Computer.vg" completed
 Processing netlist completed
-Reading constraint file: "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\src\32bitv2.cst"
+Reading constraint file: "C:\Users\BEK\repos\DOOM\src\32bitv2.cst"
 Physical Constraint parsed completed
 Running placement......
 [10%] Placement Phase 0 completed
@@ -20,10 +20,10 @@ Bitstream generation in progress......
 Bitstream generation completed
 Running power analysis......
 [100%] Power analysis completed
-Generate file "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\pnr\32bit_Computer.power.html" completed
-Generate file "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\pnr\32bit_Computer.pin.html" completed
-Generate file "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\pnr\32bit_Computer.rpt.html" completed
-Generate file "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\pnr\32bit_Computer.rpt.txt" completed
-Generate file "C:\Users\BEK\Desktop\CustomRISCVComputerOnFpga2\CustomRISCVComputerOnFpga2\reis\kim_jong_un\impl\pnr\32bit_Computer.tr.html" completed
-Thu May 14 22:52:04 2026
+Generate file "C:\Users\BEK\repos\DOOM\impl\pnr\32bit_Computer.power.html" completed
+Generate file "C:\Users\BEK\repos\DOOM\impl\pnr\32bit_Computer.pin.html" completed
+Generate file "C:\Users\BEK\repos\DOOM\impl\pnr\32bit_Computer.rpt.html" completed
+Generate file "C:\Users\BEK\repos\DOOM\impl\pnr\32bit_Computer.rpt.txt" completed
+Generate file "C:\Users\BEK\repos\DOOM\impl\pnr\32bit_Computer.tr.html" completed
+Mon May 18 14:39:38 2026
 
