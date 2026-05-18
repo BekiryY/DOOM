@@ -48,7 +48,7 @@ assign PS2_DATA_DEBUG = ~PS2_DATA_I;
 assign PS2_CLK_DEBUG = ~PS2_CLK_I;
 
 // ==============================================================================
-// 1. HARDWARE ARBITER & MULTIPLEXER WIRES
+// 1. HARDWARE ARBITER & MULTIPLEXER WIRES  (3-way: fb_dma > cpu > boot)
 // ==============================================================================
 wire [2:0]   ddr_cmd;
 wire         ddr_cmd_en;
@@ -74,17 +74,62 @@ wire [15:0]  cpu_ddr_wr_data_mask;
 wire [7:0]   cpu_uart_data;
 wire         cpu_uart_wr_en;
 
+// fb_dma DDR read outputs
+wire [2:0]  fb_ddr_cmd;
+wire        fb_ddr_cmd_en;
+wire [26:0] fb_ddr_addr;
+wire        fb_dma_busy;
+
 wire cpu_active = (boot_done == 1 && cpu_done == 0);
 
-assign ddr_cmd          = cpu_active ? cpu_ddr_cmd          : boot_ddr_cmd;
-assign ddr_cmd_en       = cpu_active ? cpu_ddr_cmd_en       : boot_ddr_cmd_en;
-assign user_addr        = cpu_active ? cpu_user_addr        : boot_user_addr;
-assign ddr_wr_data      = cpu_active ? cpu_ddr_wr_data      : boot_ddr_wr_data;
-assign ddr_wr_data_en   = cpu_active ? cpu_ddr_wr_data_en   : boot_ddr_wr_data_en;
-assign ddr_wr_data_end  = cpu_active ? cpu_ddr_wr_data_end  : boot_ddr_wr_data_end;
-assign ddr_wr_data_mask = cpu_active ? cpu_ddr_wr_data_mask : boot_ddr_wr_data_mask;
-assign uart_data        = cpu_active ? cpu_uart_data        : boot_uart_data;
-assign uart_wr_en       = cpu_active ? cpu_uart_wr_en       : boot_uart_wr_en;
+// 3-way priority: fb_dma (highest) > cpu > boot
+// fb_dma is read-only; write path stays cpu/boot.
+assign ddr_cmd          = fb_dma_busy    ? fb_ddr_cmd          :
+                          cpu_active     ? cpu_ddr_cmd          : boot_ddr_cmd;
+assign ddr_cmd_en       = fb_dma_busy    ? fb_ddr_cmd_en        :
+                          cpu_active     ? cpu_ddr_cmd_en       : boot_ddr_cmd_en;
+assign user_addr        = fb_dma_busy    ? fb_ddr_addr          :
+                          cpu_active     ? cpu_user_addr        : boot_user_addr;
+assign ddr_wr_data      = cpu_active     ? cpu_ddr_wr_data      : boot_ddr_wr_data;
+assign ddr_wr_data_en   = cpu_active     ? cpu_ddr_wr_data_en   : boot_ddr_wr_data_en;
+assign ddr_wr_data_end  = cpu_active     ? cpu_ddr_wr_data_end  : boot_ddr_wr_data_end;
+assign ddr_wr_data_mask = cpu_active     ? cpu_ddr_wr_data_mask : boot_ddr_wr_data_mask;
+assign uart_data        = cpu_active     ? cpu_uart_data        : boot_uart_data;
+assign uart_wr_en       = cpu_active     ? cpu_uart_wr_en       : boot_uart_wr_en;
+
+// ---------------------------------------------------------------------------
+// DDR read-data ownership FIFO (depth 4)
+// Owner: 0 = CPU, 1 = FB_DMA
+// Pushed whenever a READ command is issued; popped on rd_data_valid.
+// ---------------------------------------------------------------------------
+reg [3:0] own_fifo  = 4'b0000; // shift register: [0]=oldest
+reg [1:0] own_head  = 2'd0;    // write pointer
+reg [1:0] own_tail  = 2'd0;    // read pointer
+
+wire any_read_cmd = ddr_cmd_en && (ddr_cmd == 3'b001);
+wire is_dma_cmd   = fb_dma_busy && fb_ddr_cmd_en && (fb_ddr_cmd == 3'b001);
+
+always @(posedge ddr_user_clk or negedge sys_rst_n) begin
+    if (!sys_rst_n) begin
+        own_fifo <= 4'b0;
+        own_head <= 2'd0;
+        own_tail <= 2'd0;
+    end else begin
+        if (any_read_cmd) begin
+            // Push owner bit at own_head position
+            own_fifo[own_head] <= is_dma_cmd ? 1'b1 : 1'b0;
+            own_head <= own_head + 2'd1;
+        end
+        if (ddr_rd_data_valid) begin
+            own_tail <= own_tail + 2'd1; // pop
+        end
+    end
+end
+
+wire current_owner = own_fifo[own_tail]; // 0=CPU, 1=DMA
+// Gated rd_data_valid signals per consumer
+wire cpu_rd_data_valid = ddr_rd_data_valid && (current_owner == 1'b0);
+wire dma_rd_data_valid = ddr_rd_data_valid && (current_owner == 1'b1);
 
 // CPU IO READS (doomgeneric uyumlu)
 wire [31:0]  ps2_data;        // IO 0x4010_0000 — live tuş bitmask
@@ -458,24 +503,67 @@ defparam u_clkdiv5.GSREN    = "false";
 
 wire hdmi_rst_n = sys_rst_n & vga_lock;
 
-wire [13:0] vga_read_addr;
-wire        vga_read_en;
-wire [31:0] active_display_data;
+// Line buffer signals (vga_clk domain read side)
+wire [7:0]  lb_rd_addr;      // [7]=bank, [6:0]=word in line
+wire        lb_rd_en;
+wire [31:0] lb_rd_data;      // 2-cycle BSRAM latency (handled in VGA)
+wire        lb_rd_bank;      // which bank VGA reads (driven by fb_dma)
+// Scan-line prefetch trigger from VGA (vga_clk domain)
+wire        line_pulse_vga;  // 1-cycle pulse per active line end
+wire [8:0]  line_num_vga;    // DOOM row number to prefetch
 wire        hdmi_vsync;
 
 HDMI_Top u_hdmi (
-    .pix_clk       (vga_clk),
-    .tmds_clk      (hdmi_serial_clk),
-    .sys_rst_n     (hdmi_rst_n),
-    .vram_read_addr(vga_read_addr),
-    .vram_read_en  (vga_read_en),
-    .vram_read_data(active_display_data),
-    .vsync_out     (hdmi_vsync),
-    .tmds_clk_p    (tmds_clk_p),
-    .tmds_clk_n    (tmds_clk_n),
-    .tmds_data_p   (tmds_data_p),
-    .tmds_data_n   (tmds_data_n)
+    .pix_clk        (vga_clk),
+    .tmds_clk       (hdmi_serial_clk),
+    .sys_rst_n      (hdmi_rst_n),
+    .lb_rd_addr     (lb_rd_addr),
+    .lb_rd_en       (lb_rd_en),
+    .lb_rd_data     (lb_rd_data),
+    .lb_rd_bank     (lb_rd_bank),
+    .line_pulse_out (line_pulse_vga),
+    .line_num_out   (line_num_vga),
+    .vsync_out      (hdmi_vsync),
+    .tmds_clk_p     (tmds_clk_p),
+    .tmds_clk_n     (tmds_clk_n),
+    .tmds_data_p    (tmds_data_p),
+    .tmds_data_n    (tmds_data_n)
 );
+
+// ---------------------------------------------------------------------------
+// CDC: line_pulse_vga (vga_clk) → ddr_user_clk domain
+// Toggle synchroniser: safe 2-FF crossing
+// ---------------------------------------------------------------------------
+reg        lp_toggle_vga = 0;  // toggle in vga_clk domain
+reg [8:0]  ln_latch_vga  = 0;  // latch line_num when pulse fires
+
+always @(posedge vga_clk or negedge sys_rst_n) begin
+    if (!sys_rst_n) begin
+        lp_toggle_vga <= 0;
+        ln_latch_vga  <= 0;
+    end else if (line_pulse_vga) begin
+        lp_toggle_vga <= ~lp_toggle_vga;
+        ln_latch_vga  <= line_num_vga;
+    end
+end
+
+// 2-FF synchroniser in ddr_user_clk
+reg lp_sync1 = 0, lp_sync2 = 0, lp_sync3 = 0;
+always @(posedge ddr_user_clk or negedge sys_rst_n) begin
+    if (!sys_rst_n) {lp_sync3, lp_sync2, lp_sync1} <= 3'b0;
+    else            {lp_sync3, lp_sync2, lp_sync1} <= {lp_sync2, lp_sync1, lp_toggle_vga};
+end
+wire dma_line_pulse_raw = lp_sync2 ^ lp_sync3;  // edge detect = pulse in ddr_user_clk
+// Gate DMA: do not fetch framebuffer until boot is complete.
+// VGA runs immediately at power-on; without this gate fb_dma would steal
+// the DDR bus during bootloader, preventing SPI→DDR code writes.
+wire dma_line_pulse = dma_line_pulse_raw && boot_done;
+
+// Latch line_num safely (it is stable around the toggle edge)
+reg [8:0] dma_line_num = 0;
+always @(posedge ddr_user_clk) begin
+    if (dma_line_pulse) dma_line_num <= ln_latch_vga;
+end
 
 // ==============================================================================
 // SYSTEM HARDWARE TIMER (1ms resolution)
@@ -504,19 +592,17 @@ end
 
 // ==============================================================================
 // CPU (RISC-V core, caches, peripherals)
+// vram_addr_out / vram_data_out / vram_write_en removed:
+// framebuffer is now in DDR @ 0x0200_0000 — plain store instructions.
 // ==============================================================================
-wire [13:0] vram_addr_out;
-wire [31:0] vram_data_out;
-wire        vram_write_en;
-
 cpu u_cpu (
     .clk                 (ddr_user_clk),
     .rst_n               (sys_rst_n),
     .boot_done           (boot_done),
     .cpu_done            (cpu_done),
 
-    .ddr_cmd_ready       (ddr_cmd_ready),
-    .ddr_rd_data_valid   (ddr_rd_data_valid),
+    .ddr_cmd_ready       (ddr_cmd_ready && !fb_dma_busy),  // stall CPU while DMA owns bus
+    .ddr_rd_data_valid   (cpu_rd_data_valid),              // filtered by ownership FIFO
     .ddr_rd_data         (ddr_rd_data),
     .ddr_wr_data_rdy     (ddr_wr_data_rdy),
 
@@ -544,37 +630,69 @@ cpu u_cpu (
     .ps2_data            (ps2_data),
     .ps2_key_event       (ps2_key_event),
     .ms_counter          (ms_counter),
-    .hdmi_vsync          (hdmi_vsync),
-
-    .vram_addr_out       (vram_addr_out),
-    .vram_data_out       (vram_data_out),
-    .vram_write_en       (vram_write_en)
+    .hdmi_vsync          (hdmi_vsync)
 );
 
 // ==============================================================================
-// VRAM (Main Display) & CRASH MULTIPLEXER (Algorithmic BSOD)
+// FRAMEBUFFER LINE BUFFER  (replaces 64KB Gowin_SDPB_VRAM)
+// 2 banks × 80 words × 32-bit = 640 bytes  (~1 BSRAM slice on GW2A-18)
+// Write port: ddr_user_clk (from fb_dma)
+// Read  port: vga_clk      (from VGA_Controller, 2-cycle latency)
 // ==============================================================================
 
-wire [31:0] main_vram_read_data;
+(* ram_style = "block" *) reg [31:0] line_buf [0:159]; // 160 entries: bank[7]×80words[6:0]
 
-// --- 1. The Main VRAM (Active during normal gameplay) ---
-Gowin_SDPB_VRAM vram(
-    .clka(ddr_user_clk),
-    .cea(vram_write_en),
-    .reseta(~sys_rst_n),
-    .ada(vram_addr_out),
-    .din(vram_data_out),
+// ── Write port (ddr_user_clk domain, driven by fb_dma) ───────────────────
+wire [7:0]  lb_wr_addr;
+wire [31:0] lb_wr_data;
+wire        lb_wr_en;
 
-    .clkb(vga_clk),
-    .ceb(vga_read_en),
-    .resetb(~sys_rst_n),
-    .oce(1'b0),
-    .adb(vga_read_addr),
-    .dout(main_vram_read_data)
+always @(posedge ddr_user_clk) begin
+    if (lb_wr_en) line_buf[lb_wr_addr] <= lb_wr_data;
+end
+
+// ── Read port (vga_clk domain, 2-cycle registered read = BSRAM behaviour) ─
+reg [7:0]  lb_rd_addr_r1 = 0;
+reg [31:0] lb_rd_data_r  = 0;
+
+always @(posedge vga_clk) begin
+    if (lb_rd_en) begin
+        lb_rd_addr_r1 <= lb_rd_addr;         // cycle 1: latch address
+    end
+    lb_rd_data_r <= line_buf[lb_rd_addr_r1]; // cycle 2: read data
+end
+
+assign lb_rd_data = lb_rd_data_r;
+
+// ── fb_dma instance ───────────────────────────────────────────────────────
+fb_dma u_fb_dma (
+    .clk            (ddr_user_clk),
+    .rst_n          (sys_rst_n),
+    // DDR read bus
+    .ddr_cmd        (fb_ddr_cmd),
+    .ddr_cmd_en     (fb_ddr_cmd_en),
+    .ddr_addr       (fb_ddr_addr),
+    .ddr_cmd_ready  (ddr_cmd_ready),
+    .rd_data        (ddr_rd_data),
+    .rd_data_valid  (dma_rd_data_valid),
+    // Line buffer write port
+    .lb_wr_addr     (lb_wr_addr),
+    .lb_wr_data     (lb_wr_data),
+    .lb_wr_en       (lb_wr_en),
+    .lb_rd_bank     (lb_rd_bank),
+    // Scan-line trigger (CDC-synchronised pulse in ddr_user_clk)
+    .line_pulse     (dma_line_pulse),
+    .line_num       (dma_line_num),
+    // Status
+    .dma_busy       (fb_dma_busy)
 );
 
-// --- 2. Zero-RAM Algorithmic Blue Screen MUX ---
-// If CPU halts, override the VRAM data and output Pure Blue (0x03030303)
-assign active_display_data = cpu_done ? 32'h03_03_03_03 : main_vram_read_data;
+// ── BSOD crash MUX ───────────────────────────────────────────────────────
+// lb_rd_data already drives the pixel colour via VGA_Controller.
+// On CPU halt the VGA controller still scans the line buffer
+// (last frame stays on screen). For a solid blue overlay, tie the
+// HDMI data-enable low instead — or just leave the last frame visible.
+// (Previous solid-blue behaviour via active_display_data is no longer
+//  applicable since we removed the flat VRAM mux.)
 
 endmodule

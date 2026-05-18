@@ -33,12 +33,11 @@ module cpu (
     input  wire [31:0]  ps2_data,
     input  wire [31:0]  ps2_key_event,
     input  wire [31:0]  ms_counter,
-    input  wire         hdmi_vsync,
+    input  wire         hdmi_vsync
 
-    output reg  [13:0]  vram_addr_out,
-    output reg  [31:0]  vram_data_out,
-    output reg          vram_write_en
 );
+// vram_addr_out / vram_data_out / vram_write_en removed:
+// framebuffer now lives in DDR at 0x0200_0000 — plain store instructions.
 
 // 6. CPU REGISTERS
 // ==============================================================================
@@ -249,7 +248,6 @@ always @(posedge clk or negedge rst_n) begin
         is_instruction_fetch <= 1;
         data_addr <= 32'd0;
         cpu_store_data <= 32'd0;
-        vram_write_en <= 0;
         dump_reg_idx <= 5'd0;
         pending_exec_state <= 0;
 
@@ -823,13 +821,8 @@ always @(posedge clk or negedge rst_n) begin
             end
 
             C_IO_WRITE: begin
-                if (data_addr >= 32'h4000_0000 && data_addr <= 32'h4000_FFFC) begin
-                    vram_addr_out <= data_addr[15:2];
-                    vram_data_out <= cpu_store_data;
-                    vram_write_en <= 1;
-                    state <= C_EXECUTE;
-                end
-                else if (data_addr == 32'h4020_0000) begin
+                // Framebuffer aperture (0x4000_0000) removed: FB now in DDR @ 0x0200_0000
+                if (data_addr == 32'h4020_0000) begin
                     cpu_uart_msg <= cpu_store_data;
                     cpu_byte_idx <= 0;
                     return_state <= C_EXECUTE;
@@ -845,7 +838,6 @@ always @(posedge clk or negedge rst_n) begin
             // ========================================================
             C_EXECUTE: begin
                 write_enable <= 0;
-                vram_write_en <= 0;
 
                 program_counter <= program_counter + 32'd4;
                 is_instruction_fetch <= 1;
@@ -1037,7 +1029,6 @@ always @(posedge clk or negedge rst_n) begin
         is_instruction_fetch <= 1;
         data_addr <= 32'd0;
         cpu_store_data <= 32'd0;
-        vram_write_en <= 0;
         dump_reg_idx <= 5'd0;
         pending_exec_state <= 0;
         cpu_done <= 0;

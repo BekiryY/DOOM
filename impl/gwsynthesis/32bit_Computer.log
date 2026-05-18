@@ -16,7 +16,9 @@ Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_rpll\gowin_rpll.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_rpll_2\gowin_rpll_2.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v'
+Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\fb_dma.v'
 Compiling module 'Main_Computer'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":1)
+Extracting RAM for identifier 'line_buf'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":639)
 Compiling module 'ICache'("C:\Users\BEK\repos\DOOM\src\ICache.v":11)
 Extracting RAM for identifier 'data_mem'("C:\Users\BEK\repos\DOOM\src\ICache.v":30)
 Extracting RAM for identifier 'tag_mem'("C:\Users\BEK\repos\DOOM\src\ICache.v":31)
@@ -28,8 +30,8 @@ Compiling module 'UART_Controller(BAUD_RATE=1000000)'("C:\Users\BEK\repos\DOOM\s
 Compiling module 'SPI_Controller'("C:\Users\BEK\repos\DOOM\src\SPI.v":1)
 Compiling module 'PS2_Controller'("C:\Users\BEK\repos\DOOM\src\PS2_Controller.v":28)
 Compiling module 'Gowin_rPLL_VGA'("C:\Users\BEK\repos\DOOM\src\gowin_rpll_2\gowin_rpll_2.v":10)
-Compiling module 'HDMI_Top'("C:\Users\BEK\repos\DOOM\src\HDMI_Top.v":8)
-Compiling module 'VGA_Controller'("C:\Users\BEK\repos\DOOM\src\VGA.v":1)
+Compiling module 'HDMI_Top'("C:\Users\BEK\repos\DOOM\src\HDMI_Top.v":4)
+Compiling module 'VGA_Controller'("C:\Users\BEK\repos\DOOM\src\VGA.v":11)
 Compiling module '**'("C:\Users\BEK\repos\DOOM\src\dvi_tx\dvi_tx.v":1088)
 Compiling module 'cpu'("C:\Users\BEK\repos\DOOM\src\cpu.v":1)
 Compiling module 'CPU_Registers'("C:\Users\BEK\repos\DOOM\src\CPU_Registers.v":1)
@@ -37,7 +39,8 @@ Extracting RAM for identifier 'registers'("C:\Users\BEK\repos\DOOM\src\CPU_Regis
 Compiling module 'DCache'("C:\Users\BEK\repos\DOOM\src\DCache.v":5)
 Extracting RAM for identifier 'data_mem'("C:\Users\BEK\repos\DOOM\src\DCache.v":20)
 Extracting RAM for identifier 'tag_mem'("C:\Users\BEK\repos\DOOM\src\DCache.v":21)
-Compiling module 'Gowin_SDPB_VRAM'("C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v":10)
+Compiling module 'fb_dma'("C:\Users\BEK\repos\DOOM\src\fb_dma.v":18)
+WARN  (EX3791) : Expression size 33 truncated to fit in target size 8("C:\Users\BEK\repos\DOOM\src\fb_dma.v":134)
 NOTE  (EX0101) : Current top module is "Main_Computer"
 [5%] Running netlist conversion ...
 Running device independent optimization ...

@@ -9,7 +9,7 @@
   "SubInsts" : [
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 120,
+    "InstLine" : 165,
     "InstName" : "icache_inst",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ICache.v",
     "ModuleLine" : 11,
@@ -17,7 +17,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 136,
+    "InstLine" : 181,
     "InstName" : "rpll_270_inst",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/rpll_270/rpll_270.v",
     "ModuleLine" : 10,
@@ -25,7 +25,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 142,
+    "InstLine" : 187,
     "InstName" : "r_clock",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll/gowin_rpll.v",
     "ModuleLine" : 10,
@@ -33,7 +33,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 149,
+    "InstLine" : 194,
     "InstName" : "main_ram",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
     "ModuleLine" : 11484,
@@ -51,7 +51,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 204,
+    "InstLine" : 249,
     "InstName" : "debug_uart",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/UART.v",
     "ModuleLine" : 1,
@@ -59,7 +59,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 226,
+    "InstLine" : 271,
     "InstName" : "spi_inst",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/SPI.v",
     "ModuleLine" : 1,
@@ -67,7 +67,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 422,
+    "InstLine" : 467,
     "InstName" : "keyboard",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/PS2_Controller.v",
     "ModuleLine" : 28,
@@ -75,7 +75,7 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 443,
+    "InstLine" : 488,
     "InstName" : "u_Gowin_rPLL_VGA",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll_2/gowin_rpll_2.v",
     "ModuleLine" : 10,
@@ -83,10 +83,10 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 466,
+    "InstLine" : 516,
     "InstName" : "u_hdmi",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
-    "ModuleLine" : 8,
+    "ModuleLine" : 4,
     "ModuleName" : "HDMI_Top",
     "SubInsts" : [
      {
@@ -99,17 +99,17 @@
      },
      {
       "InstFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
-      "InstLine" : 38,
+      "InstLine" : 39,
       "InstName" : "u_vga",
       "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/VGA.v",
-      "ModuleLine" : 1,
+      "ModuleLine" : 11,
       "ModuleName" : "VGA_Controller"
      }
     ]
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 512,
+    "InstLine" : 598,
     "InstName" : "u_cpu",
     "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
     "ModuleLine" : 1,
@@ -117,7 +117,7 @@
     "SubInsts" : [
      {
       "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 62,
+      "InstLine" : 61,
       "InstName" : "cpu_register_controller",
       "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
       "ModuleLine" : 1,
@@ -125,7 +125,7 @@
      },
      {
       "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 221,
+      "InstLine" : 220,
       "InstName" : "dcache_inst",
       "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
       "ModuleLine" : 5,
@@ -135,12 +135,20 @@
    },
    {
     "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 561,
-    "InstName" : "vram",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
-    "ModuleLine" : 10,
-    "ModuleName" : "Gowin_SDPB_VRAM"
+    "InstLine" : 668,
+    "InstName" : "u_fb_dma",
+    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/fb_dma.v",
+    "ModuleLine" : 18,
+    "ModuleName" : "fb_dma"
    }
   ]
+ },
+ {
+  "InstFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
+  "InstLine" : 10,
+  "InstName" : "Gowin_SDPB_VRAM",
+  "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
+  "ModuleLine" : 10,
+  "ModuleName" : "Gowin_SDPB_VRAM"
  }
 ]
