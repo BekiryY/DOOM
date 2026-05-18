@@ -1,5 +1,5 @@
 // =============================================================================
-// fb_dma.v  —  DDR Framebuffer Scan-Line DMA
+// fb_dma.v  —  DDR Framebuffer Scan-Line DMA   dana bekir
 // =============================================================================
 // Runs in ddr_user_clk (100 MHz) domain.
 // Triggered once per VGA scan line (via a CDC pulse from vga_clk).
