@@ -2,19 +2,24 @@
 <GAO_CONFIG>
     <Version>3.0</Version>
     <Mode>Standard</Mode>
-    <AoCore index="0" sample_clock="ddr_user_clk" trig_type="0" storage_depth="2048" window_num="1" capture_amount="2048" implementation="0" trigger_pos="0" module_name="Main_Computer" force_trigger_by_falling_edge="false" capture_init_data_enabled="true">
+    <AoCore index="0" sample_clock="ddr_user_clk" trig_type="0" storage_depth="4096" window_num="1" capture_amount="4096" implementation="0" trigger_pos="256" module_name="Main_Computer" force_trigger_by_falling_edge="false" capture_init_data_enabled="false">
         <SignalList>
+            <!-- ── Boot / DDR status ── -->
             <Signal capture_enable="true">boot_done</Signal>
             <Signal capture_enable="true">ddr_calib_complete</Signal>
             <Signal capture_enable="true">cpu_done</Signal>
             <Signal capture_enable="true">fb_dma_busy</Signal>
             <Signal capture_enable="true">dma_line_pulse</Signal>
+
+            <!-- ── DDR bus ── -->
             <Signal capture_enable="true">ddr_cmd_en</Signal>
             <Signal capture_enable="true">ddr_rd_data_valid</Signal>
             <Signal capture_enable="true">cpu_rd_data_valid</Signal>
             <Signal capture_enable="true">dma_rd_data_valid</Signal>
             <Signal capture_enable="true">ddr_wr_data_rdy</Signal>
             <Signal capture_enable="true">ddr_cmd_ready</Signal>
+
+            <!-- ── CPU state machine ── -->
             <Bus capture_enable="true" name="u_cpu/state[5:0]">
                 <Signal>u_cpu/state[5]</Signal>
                 <Signal>u_cpu/state[4]</Signal>
@@ -23,6 +28,8 @@
                 <Signal>u_cpu/state[1]</Signal>
                 <Signal>u_cpu/state[0]</Signal>
             </Bus>
+
+            <!-- ── Program counter (upper bits) ── -->
             <Bus capture_enable="true" name="program_counter[27:4]">
                 <Signal>program_counter[27]</Signal>
                 <Signal>program_counter[26]</Signal>
@@ -49,11 +56,15 @@
                 <Signal>program_counter[5]</Signal>
                 <Signal>program_counter[4]</Signal>
             </Bus>
+
+            <!-- ── ICache / DCache ── -->
             <Signal capture_enable="true">icache_inst/cpu_valid</Signal>
             <Signal capture_enable="true">u_cpu/icache_req</Signal>
             <Signal capture_enable="true">icache_fill_en</Signal>
             <Signal capture_enable="true">u_cpu/dcache_req</Signal>
             <Signal capture_enable="true">u_cpu/dcache_fill_en</Signal>
+
+            <!-- ── Ownership FIFO ── -->
             <Signal capture_enable="true">current_owner</Signal>
             <Bus capture_enable="true" name="own_fifo[3:0]">
                 <Signal>own_fifo[3]</Signal>
@@ -61,9 +72,13 @@
                 <Signal>own_fifo[1]</Signal>
                 <Signal>own_fifo[0]</Signal>
             </Bus>
+
+            <!-- ── UART TX activity ── -->
             <Signal capture_enable="true">uart_wr_en</Signal>
             <Signal capture_enable="true">uart_write_done</Signal>
             <Signal capture_enable="true">TX</Signal>
+
+            <!-- ── Bootloader state ── -->
             <Bus capture_enable="true" name="b_state[3:0]">
                 <Signal>b_state[3]</Signal>
                 <Signal>b_state[2]</Signal>
@@ -72,16 +87,19 @@
             </Bus>
         </SignalList>
         <Triggers>
+            <!-- Trigger 0: boot_done rising edge (the moment CPU is allowed to start) -->
             <Trigger index="0">
                 <SignalList>
                     <Signal>boot_done</Signal>
                 </SignalList>
             </Trigger>
+            <!-- Trigger 1: cpu_done rising edge (CPU halted — catch crash) -->
             <Trigger index="1">
                 <SignalList>
                     <Signal>cpu_done</Signal>
                 </SignalList>
             </Trigger>
+            <!-- Trigger 2: UART TX activity -->
             <Trigger index="2">
                 <SignalList>
                     <Signal>uart_wr_en</Signal>
@@ -102,8 +120,11 @@
             <Trigger index="15"/>
         </Triggers>
         <MatchUnits>
+            <!-- M0: boot_done rising edge -->
             <MatchUnit index="0" enabled="1" match_type="1" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="R" value1="0" trigger="0"/>
+            <!-- M1: cpu_done rising edge (crash) -->
             <MatchUnit index="1" enabled="1" match_type="1" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="R" value1="0" trigger="1"/>
+            <!-- M2: uart_wr_en rising edge -->
             <MatchUnit index="2" enabled="1" match_type="1" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="R" value1="0" trigger="2"/>
             <MatchUnit index="3" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
             <MatchUnit index="4" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
@@ -120,10 +141,10 @@
             <MatchUnit index="15" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
         </MatchUnits>
         <Expressions type="Dynamic" ex_implementation="0">
+            <!-- Fire on boot_done rising OR cpu_done rising OR uart_wr_en rising -->
+            <Expression>M0|M1|M2</Expression>
             <Expression>M0</Expression>
-            <Expression>M0</Expression>
-            <Expression>M2</Expression>
         </Expressions>
     </AoCore>
-    <GAO_ID>0100011011100001</GAO_ID>
+    <GAO_ID>1101101011100111</GAO_ID>
 </GAO_CONFIG>
