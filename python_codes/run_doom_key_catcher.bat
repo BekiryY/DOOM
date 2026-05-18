@@ -1,4 +1,3 @@
 @echo off
-echo Klavye baglaniyor... FPGA'nin COM portunun key_catcher.py icinde dogru olduguna emin ol (PORT = 'COM6')
-python "C:\Users\musta\Desktop\DOOM\reis\python_codes\key_catcher.py"
-pause
+C:\Users\BEK\AppData\Local\Programs\Python\Python312\python.exe C:\Users\BEK\repos\DOOM\python_codes\key_catcher.py
+pause
