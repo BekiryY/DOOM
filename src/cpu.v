@@ -1,3 +1,9 @@
+// =============================================================================
+// cpu.v — RV32IM core
+// FIX 3: C_LOAD_INSTR + C_DECODE birleşik (1 saat tasarrufu/instr)
+//        C_PREFETCH_CLEANUP kaldırıldı (top-of-block auto-clear ile değiştirildi)
+// FIX 5: cpu_fb_swap_en/data çıkışları eklendi (IO 0x4050_0000 yazımı yakalanır)
+// =============================================================================
 module cpu (
     input  wire         clk,
     input  wire         rst_n,
@@ -33,29 +39,26 @@ module cpu (
     input  wire [31:0]  ps2_data,
     input  wire [31:0]  ps2_key_event,
     input  wire [31:0]  ms_counter,
-    input  wire         hdmi_vsync
+    input  wire         hdmi_vsync,
 
+    // FIX 5: Double-buffer için aktif FB tabanını Main'e bildir
+    output reg  [31:0]  cpu_fb_swap_data,
+    output reg          cpu_fb_swap_en
 );
-// vram_addr_out / vram_data_out / vram_write_en removed:
-// framebuffer now lives in DDR at 0x0200_0000 — plain store instructions.
 
 // 6. CPU REGISTERS
-// ==============================================================================
 reg [4:0] read1_addr = 0;
 wire [31:0] read1_data;
-
 reg [4:0] read2_addr = 0;
 wire [31:0] read2_data;
-
 reg [4:0] write_addr = 0;
 reg [31:0] write_data = 0;
 reg [31:0] read1_data_reg = 0;
 reg [31:0] read2_data_reg = 0;
-// --- Pre-computed flags (registered in C_REG_FETCH_WAIT to break critical paths) ---
-reg         rs2_is_zero   = 0;  // read2_data == 0 (division by zero)
-reg         branch_eq     = 0;  // rs1 == rs2
-reg         branch_lt     = 0;  // $signed(rs1) < $signed(rs2)
-reg         branch_ltu    = 0;  // rs1 < rs2 (unsigned)
+reg         rs2_is_zero   = 0;
+reg         branch_eq     = 0;
+reg         branch_lt     = 0;
+reg         branch_ltu    = 0;
 reg write_enable = 0;
 
 CPU_Registers cpu_register_controller(
@@ -70,7 +73,7 @@ CPU_Registers cpu_register_controller(
 );
 
 // ==============================================================================
-// 7. COMPUTER STATE MACHINE (Now 6-bit for Prefetch States)
+// 7. STATE MACHINE
 // ==============================================================================
 localparam C_UART_SEND         = 6'd0;
 localparam C_UART_WAIT_DONE    = 6'd1;
@@ -78,7 +81,7 @@ localparam C_DDR_WAIT_READ     = 6'd2;
 localparam C_DDR_READ          = 6'd3;
 localparam C_DDR_WAIT_DATA     = 6'd4;
 localparam C_LOAD_INSTR        = 6'd5;
-localparam C_DECODE            = 6'd6;
+localparam C_DECODE            = 6'd6;  // FIX 3: artık kullanılmıyor (LOAD_INSTR ile birleşti)
 
 localparam C_EXEC_R_TYPE       = 6'd7;
 localparam C_EXEC_I_TYPE       = 6'd8;
@@ -109,73 +112,56 @@ localparam C_DEBUG_PRINT_INSTR = 6'd28;
 localparam C_CHECK_ILLEGAL_R   = 6'd29;
 localparam C_REG_FETCH_WAIT    = 6'd30;
 
-// --- NEW PREFETCH STATES ---
 localparam C_PREFETCH_ISSUE    = 6'd31;
-localparam C_PREFETCH_CLEANUP  = 6'd32;
+localparam C_PREFETCH_CLEANUP  = 6'd32;  // FIX 3: artık kullanılmıyor
 
-// --- RV32M Extension States ---
-localparam C_EXEC_MUL          = 6'd33; // MUL / MULH / MULHU / MULHSU (1 cycle, DSP)
-localparam C_DIV_SETUP         = 6'd34; // DIV / DIVU / REM / REMU — start IP, latch which result
-localparam C_DIV_WAIT          = 6'd35; // 34-cycle IP latency wait
+localparam C_EXEC_MUL          = 6'd33;
+localparam C_DIV_SETUP         = 6'd34;
+localparam C_DIV_WAIT          = 6'd35;
 
-// --- Instruction Cache State ---
-localparam C_ICACHE_WAIT       = 6'd36; // 1-cycle BSRAM read latency
-localparam C_DCACHE_WAIT       = 6'd37; // 1-cycle BSRAM read latency
+localparam C_ICACHE_WAIT       = 6'd36;
+localparam C_DCACHE_WAIT       = 6'd37;
 
 reg [5:0]  state = C_DDR_WAIT_READ;
 reg [5:0]  return_state = C_DDR_WAIT_READ;
 reg [5:0]  pending_exec_state = 0;
 
-// CPU Private (DDR/UART buses are module outputs)
 reg [1:0]   cpu_byte_idx = 0;
 reg [31:0]  cpu_uart_msg = 0;
 
-// Sub-Word Memory Alignment Wires
 reg [31:0]  raw_word = 0;
 reg [3:0]   base_mask = 0;
 reg [31:0]  active_payload = 0;
 
-// program_counter: yukarıda ICache'den önce tanımlandı (satır ~109)
-reg [127:0] memory_read_reg = 0; // Now only used for Data Loads
+reg [127:0] memory_read_reg = 0;
 reg [31:0]  first_instr = 0;
 reg [31:0]  second_instr = 0;
 reg [31:0]  third_instr = 0;
 reg [31:0]  fourth_instr = 0;
 
-// --- DDR3 TRANSACTION QUEUE & BACKGROUND CATCHER ---
 reg [1:0]  rq_head = 0;
 reg [1:0]  rq_tail = 0;
-reg [3:0]  rq_is_data = 0; // 1 = Data Load, 0 = Instruction/Prefetch
+reg [3:0]  rq_is_data = 0;
 reg [26:0] rq_addr_0=0, rq_addr_1=0, rq_addr_2=0, rq_addr_3=0;
 
 reg [127:0] pf_read_reg = 0;
-reg [26:0]  pf_ready_addr = 27'h7FFFFFF; // Initializes to invalid address
+reg [26:0]  pf_ready_addr = 27'h7FFFFFF;
 reg         pf_valid = 0;
 
 reg [127:0] dmem_read_reg = 0;
 reg         dmem_valid = 0;
-// ----------------------------------------------------
 
-// --- RV32M Divider — fast iterative restoring division ---
-// No Gowin IP cores needed — fully self-contained.
-//
-// Algorithm: unsigned restoring binary long-division.
-// Signed inputs are pre-negated; sign is corrected after.
-// Leading-zero early exit: we only iterate for (32 - lz_skip) cycles,
-// which for typical DOOM operands (<=16-bit) saves ~16 cycles per divide.
-
-reg         div_is_rem      = 0;  // 1=REM/REMU, 0=DIV/DIVU
-reg         div_is_signed   = 0;  // 1=DIV/REM (signed)
-reg         div_quot_neg    = 0;  // quotient  must be negated at end
-reg         div_rem_neg     = 0;  // remainder must be negated at end
-reg [5:0]   div_iter        = 0;  // current iteration (counts down)
-reg [5:0]   div_total_iter  = 0;  // total iterations = 32 - lz_skip
+reg         div_is_rem      = 0;
+reg         div_is_signed   = 0;
+reg         div_quot_neg    = 0;
+reg         div_rem_neg     = 0;
+reg [5:0]   div_iter        = 0;
+reg [5:0]   div_total_iter  = 0;
 reg [31:0]  div_quotient    = 0;
-reg [32:0]  div_partial     = 0;  // 33-bit partial remainder (MSB = sign)
-reg [31:0]  div_divisor_r   = 0;  // magnitude of divisor
-reg [31:0]  div_dividend_r  = 0;  // magnitude of dividend (shifted out)
+reg [32:0]  div_partial     = 0;
+reg [31:0]  div_divisor_r   = 0;
+reg [31:0]  div_dividend_r  = 0;
 
-// Leading-zero count helper (used combinatorially in C_DIV_SETUP)
 function automatic [5:0] count_leading_zeros;
     input [31:0] v;
     integer i;
@@ -187,9 +173,6 @@ function automatic [5:0] count_leading_zeros;
     end
 endfunction
 
-// --- rs2==0 pre-flag (registered in C_REG_FETCH_WAIT) ---
-
-// Internal CPU decoding wires
 reg [31:0]  current_instr = 0;
 reg [6:0]   opcode = 0;
 reg [2:0]   funct3 = 0;
@@ -251,54 +234,53 @@ always @(posedge clk or negedge rst_n) begin
         dump_reg_idx <= 5'd0;
         pending_exec_state <= 0;
 
-        // Reset Queue
         rq_head <= 0; rq_tail <= 0; rq_is_data <= 0;
         pf_valid <= 0; dmem_valid <= 0; pf_ready_addr <= 27'h7FFFFFF;
 
+        cpu_fb_swap_en   <= 0;
+        cpu_fb_swap_data <= 0;
+
     end else if (boot_done && !cpu_done) begin
 
+        // =====================================================================
+        // FIX 3: Top-of-block 1-cycle pulse cleanup
+        // (C_PREFETCH_CLEANUP'a gerek bırakmaz)
+        // =====================================================================
+        if (cpu_ddr_cmd_en)       cpu_ddr_cmd_en       <= 0;
+        if (cpu_fb_swap_en)       cpu_fb_swap_en       <= 0;
+
         // ========================================================
-        // GLOBAL SNOOPING QUEUE (Background Data Catcher)
+        // GLOBAL SNOOPING QUEUE
         // ========================================================
         if (ddr_rd_data_valid) begin
             if (rq_is_data[rq_tail]) begin
-                // It was a Data Load Request
                 dmem_read_reg <= ddr_rd_data;
                 dmem_valid    <= 1;
-                
-                // ─── DCache doldur ───────────────────────────────────────
                 dcache_fill_en   <= 1;
                 dcache_fill_addr <= (rq_tail == 2'd0) ? {rq_addr_0, 4'b0} :
                                     (rq_tail == 2'd1) ? {rq_addr_1, 4'b0} :
                                     (rq_tail == 2'd2) ? {rq_addr_2, 4'b0} :
                                                         {rq_addr_3, 4'b0};
                 dcache_fill_data <= ddr_rd_data;
-                // ─────────────────────────────────────────────────────────
             end else begin
-                // It was an Instruction Prefetch Request
                 pf_read_reg   <= ddr_rd_data;
                 pf_valid      <= 1;
-                // Save the exact address this block belongs to
                 if (rq_tail == 2'd0) pf_ready_addr <= rq_addr_0;
                 else if (rq_tail == 2'd1) pf_ready_addr <= rq_addr_1;
                 else if (rq_tail == 2'd2) pf_ready_addr <= rq_addr_2;
                 else pf_ready_addr <= rq_addr_3;
-
-                // ─── ICache doldur ───────────────────────────────────────
                 icache_fill_en   <= 1;
                 icache_fill_addr <= (rq_tail == 2'd0) ? {rq_addr_0, 4'b0} :
                                     (rq_tail == 2'd1) ? {rq_addr_1, 4'b0} :
                                     (rq_tail == 2'd2) ? {rq_addr_2, 4'b0} :
                                                         {rq_addr_3, 4'b0};
                 icache_fill_data <= ddr_rd_data;
-                // ─────────────────────────────────────────────────────────
             end
-            rq_tail <= rq_tail + 2'd1; // Advance the FIFO
+            rq_tail <= rq_tail + 2'd1;
         end else begin
-            icache_fill_en <= 0; // pulse genişliği sadece 1 saat
+            icache_fill_en <= 0;
             dcache_fill_en <= 0;
         end
-        // ========================================================
 
         case (state)
             C_UART_SEND: begin
@@ -336,25 +318,23 @@ always @(posedge clk or negedge rst_n) begin
                 else if (is_instruction_fetch == 1'b1) begin
                     icache_req <= 1;
                     dcache_req <= 0;
-                    state <= C_ICACHE_WAIT; // Pipeline ICache
+                    state <= C_ICACHE_WAIT;
                 end
                 else begin
                     icache_req <= 0;
                     dcache_req <= 1;
-                    state <= C_DCACHE_WAIT; // Pipeline DCache
+                    state <= C_DCACHE_WAIT;
                 end
             end
 
             C_DDR_READ: begin
-                cpu_ddr_cmd_en <= 0;
+                // cpu_ddr_cmd_en zaten top-of-block auto-clear ile temizleniyor
                 state <= C_DDR_WAIT_DATA;
             end
 
             C_DDR_WAIT_DATA: begin
-                // We wait for the Global Catcher to flag that data arrived
                 if (is_instruction_fetch) begin
                     if (pf_valid) begin
-                        // Check if it's the data we actually want (Protects against stray branch prefetches)
                         if (pf_ready_addr == {program_counter[27:4], 3'b000}) begin
                             pf_valid <= 0;
                             first_instr  <= {pf_read_reg[103:96], pf_read_reg[111:104], pf_read_reg[119:112], pf_read_reg[127:120]};
@@ -363,11 +343,10 @@ always @(posedge clk or negedge rst_n) begin
                             fourth_instr <= {pf_read_reg[7:0],    pf_read_reg[15:8],    pf_read_reg[23:16],   pf_read_reg[31:24]};
                             state <= C_LOAD_INSTR;
                         end else begin
-                            pf_valid <= 0; // Throw away stale branch prefetch
+                            pf_valid <= 0;
                         end
                     end
                 end else begin
-                    // It was a Data Load
                     if (dmem_valid) begin
                         dmem_valid <= 0;
                         memory_read_reg <= dmem_read_reg;
@@ -376,24 +355,77 @@ always @(posedge clk or negedge rst_n) begin
                 end
             end
 
+            // =================================================================
+            // FIX 3: C_LOAD_INSTR + C_DECODE birleşik tek state
+            // 2 saat → 1 saat (her instr için)
+            // =================================================================
             C_LOAD_INSTR: begin
                 write_enable <= 0;
-                case (program_counter[3:2])
-                    2'b00: current_instr <= first_instr;
-                    2'b01: current_instr <= second_instr;
-                    2'b10: current_instr <= third_instr;
-                    2'b11: current_instr <= fourth_instr;
-                endcase
-                state <= C_DECODE;
+                begin : load_decode
+                    reg [31:0] instr;
+                    case (program_counter[3:2])
+                        2'b00: instr = first_instr;
+                        2'b01: instr = second_instr;
+                        2'b10: instr = third_instr;
+                        2'b11: instr = fourth_instr;
+                    endcase
+                    current_instr <= instr;
+                    opcode <= instr[6:0];
+                    funct3 <= instr[14:12];
+                    funct7 <= instr[31:25];
+                    read1_addr <= instr[19:15];
+                    read2_addr <= instr[24:20];
+                    write_addr <= instr[11:7];
+                    is_instruction_fetch <= 0;
+                    return_state <= C_EXECUTE;
+
+                    case (instr[6:0])
+                        7'b0110011: begin pending_exec_state <= C_CHECK_ILLEGAL_R; state <= C_REG_FETCH_WAIT; end
+                        7'b0010011: begin pending_exec_state <= C_EXEC_I_TYPE;     state <= C_REG_FETCH_WAIT; end
+                        7'b0000011: begin pending_exec_state <= C_EXEC_LOAD;       state <= C_REG_FETCH_WAIT; end
+                        7'b0100011: begin pending_exec_state <= C_EXEC_STORE;      state <= C_REG_FETCH_WAIT; end
+                        7'b1100011: begin pending_exec_state <= C_EXEC_BRANCH;     state <= C_REG_FETCH_WAIT; end
+                        7'b1100111: begin pending_exec_state <= C_EXEC_JALR;       state <= C_REG_FETCH_WAIT; end
+                        7'b1101111: state <= C_EXEC_JAL;
+                        7'b0110111: state <= C_EXEC_LUI;
+                        7'b0010111: state <= C_EXEC_AUIPC;
+                        7'b0001111: state <= C_EXECUTE;
+                        7'b1110011: state <= C_EXECUTE;
+                        default:    state <= C_HALT;
+                    endcase
+                end
             end
 
-            // ICache hit: BSRAM 1 saat okuma gecikmesi bekleniyor
             C_ICACHE_WAIT: begin
                 write_enable <= 0;
                 icache_req   <= 0;
                 if (icache_valid) begin
                     current_instr <= icache_data;
-                    state         <= C_DECODE;
+                    // ICache yolu hala iki saat (WAIT → DECODE).
+                    // Burada eski C_DECODE mantığını birebir inline yapıyoruz:
+                    opcode <= icache_data[6:0];
+                    funct3 <= icache_data[14:12];
+                    funct7 <= icache_data[31:25];
+                    read1_addr <= icache_data[19:15];
+                    read2_addr <= icache_data[24:20];
+                    write_addr <= icache_data[11:7];
+                    is_instruction_fetch <= 0;
+                    return_state <= C_EXECUTE;
+
+                    case (icache_data[6:0])
+                        7'b0110011: begin pending_exec_state <= C_CHECK_ILLEGAL_R; state <= C_REG_FETCH_WAIT; end
+                        7'b0010011: begin pending_exec_state <= C_EXEC_I_TYPE;     state <= C_REG_FETCH_WAIT; end
+                        7'b0000011: begin pending_exec_state <= C_EXEC_LOAD;       state <= C_REG_FETCH_WAIT; end
+                        7'b0100011: begin pending_exec_state <= C_EXEC_STORE;      state <= C_REG_FETCH_WAIT; end
+                        7'b1100011: begin pending_exec_state <= C_EXEC_BRANCH;     state <= C_REG_FETCH_WAIT; end
+                        7'b1100111: begin pending_exec_state <= C_EXEC_JALR;       state <= C_REG_FETCH_WAIT; end
+                        7'b1101111: state <= C_EXEC_JAL;
+                        7'b0110111: state <= C_EXEC_LUI;
+                        7'b0010111: state <= C_EXEC_AUIPC;
+                        7'b0001111: state <= C_EXECUTE;
+                        7'b1110011: state <= C_EXECUTE;
+                        default:    state <= C_HALT;
+                    endcase
                 end
                 else if (pf_valid && pf_ready_addr == {program_counter[27:4], 3'b000}) begin
                     pf_valid    <= 0;
@@ -419,7 +451,6 @@ always @(posedge clk or negedge rst_n) begin
                 end
             end
 
-            // DCache hit: 1 saat gecikme
             C_DCACHE_WAIT: begin
                 write_enable <= 0;
                 dcache_req   <= 0;
@@ -480,57 +511,15 @@ always @(posedge clk or negedge rst_n) begin
             C_DEBUG_PRINT_INSTR: begin
                 cpu_uart_msg <= current_instr;
                 cpu_byte_idx <= 0;
-                return_state <= C_DECODE;
-                state <= C_UART_SEND;
-            end
-
-            C_DECODE: begin
-                opcode <= current_instr[6:0];
-                funct3 <= current_instr[14:12];
-                funct7 <= current_instr[31:25];
-
-                read1_addr <= current_instr[19:15];
-                read2_addr <= current_instr[24:20];
-                write_addr <= current_instr[11:7];
-
-                is_instruction_fetch <= 0;
                 return_state <= C_EXECUTE;
-
-                case (current_instr[6:0])
-                    7'b0110011: begin pending_exec_state <= C_CHECK_ILLEGAL_R; state <= C_REG_FETCH_WAIT; end
-
-                    7'b0010011: begin pending_exec_state <= C_EXEC_I_TYPE; state <= C_REG_FETCH_WAIT; end
-                    7'b0000011: begin pending_exec_state <= C_EXEC_LOAD;   state <= C_REG_FETCH_WAIT; end
-                    7'b0100011: begin pending_exec_state <= C_EXEC_STORE;  state <= C_REG_FETCH_WAIT; end
-                    7'b1100011: begin pending_exec_state <= C_EXEC_BRANCH; state <= C_REG_FETCH_WAIT; end
-                    7'b1100111: begin pending_exec_state <= C_EXEC_JALR;   state <= C_REG_FETCH_WAIT; end
-
-                    7'b1101111: state <= C_EXEC_JAL;
-                    7'b0110111: state <= C_EXEC_LUI;
-                    7'b0010111: state <= C_EXEC_AUIPC;
-
-                    7'b0001111: state <= C_EXECUTE;
-                    7'b1110011: state <= C_EXECUTE;
-
-                    default:    state <= C_HALT;
-                endcase
+                state <= C_UART_SEND;
             end
 
             C_CHECK_ILLEGAL_R: begin
                 if (funct7 == 7'b0000001) begin
-                    // RV32M: MUL needs reg values, route through fetch wait
                     case (funct3)
-                        3'b000,
-                        3'b001,
-                        3'b010,
-                        3'b011: begin
-                            // MUL variants — registers already loaded (C_REG_FETCH_WAIT ran)
-                            state <= C_EXEC_MUL;
-                        end
-                        default: begin
-                            // DIV/REM variants
-                            state <= C_DIV_SETUP;
-                        end
+                        3'b000, 3'b001, 3'b010, 3'b011: state <= C_EXEC_MUL;
+                        default: state <= C_DIV_SETUP;
                     endcase
                 end else begin
                     state <= C_EXEC_R_TYPE;
@@ -540,7 +529,6 @@ always @(posedge clk or negedge rst_n) begin
             C_REG_FETCH_WAIT: begin
                 read1_data_reg <= read1_data;
                 read2_data_reg <= read2_data;
-                // Pre-compute comparison flags to cut critical paths
                 rs2_is_zero  <= (read2_data == 32'd0);
                 branch_eq    <= (read1_data == read2_data);
                 branch_lt    <= ($signed(read1_data) < $signed(read2_data));
@@ -548,46 +536,30 @@ always @(posedge clk or negedge rst_n) begin
                 state <= pending_exec_state;
             end
 
-            // ========================================================
-            // RV32M — MULTIPLICATION  (1 cycle, uses Gowin DSP48 blocks)
-            // ========================================================
             C_EXEC_MUL: begin
                 write_enable <= 1;
                 case (funct3)
-                    3'b000: // MUL — lower 32 bits of rs1 * rs2
-                        write_data <= read1_data_reg * read2_data_reg;
-                    3'b001: // MULH — upper 32 bits, signed × signed
-                        write_data <= ($signed({{32{read1_data_reg[31]}}, read1_data_reg}) *
-                                       $signed({{32{read2_data_reg[31]}}, read2_data_reg})) >> 32;
-                    3'b010: // MULHSU — upper 32 bits, signed × unsigned
-                        write_data <= ($signed({{32{read1_data_reg[31]}}, read1_data_reg}) *
-                                       {32'd0, read2_data_reg}) >> 32;
-                    3'b011: // MULHU — upper 32 bits, unsigned × unsigned
-                        write_data <= ({32'd0, read1_data_reg} * {32'd0, read2_data_reg}) >> 32;
+                    3'b000: write_data <= read1_data_reg * read2_data_reg;
+                    3'b001: write_data <= ($signed({{32{read1_data_reg[31]}}, read1_data_reg}) *
+                                           $signed({{32{read2_data_reg[31]}}, read2_data_reg})) >> 32;
+                    3'b010: write_data <= ($signed({{32{read1_data_reg[31]}}, read1_data_reg}) *
+                                           {32'd0, read2_data_reg}) >> 32;
+                    3'b011: write_data <= ({32'd0, read1_data_reg} * {32'd0, read2_data_reg}) >> 32;
                     default: write_data <= 32'd0;
                 endcase
                 state <= return_state;
             end
 
-            // ========================================================
-            // RV32M — DIVISION / REMAINDER  (iterative restoring, fast)
-            // ========================================================
-            // funct3: 100=DIV  101=DIVU  110=REM  111=REMU
-            // Latency: (32 - leading_zeros) cycles, typically ~10-16 for DOOM.
             C_DIV_SETUP: begin
                 div_is_signed <= (funct3 == 3'b100 || funct3 == 3'b110);
                 div_is_rem    <= (funct3 == 3'b110 || funct3 == 3'b111);
 
                 if (rs2_is_zero) begin
-                    // Division by zero — RISC-V spec mandates specific values
-                    // DIV/DIVU → 0xFFFFFFFF, REM/REMU → dividend
                     write_data   <= (funct3 == 3'b110 || funct3 == 3'b111) ?
                                     read1_data_reg : 32'hFFFF_FFFF;
                     write_enable <= 1;
                     state        <= return_state;
                 end else begin
-                    // --- Signed: capture sign, convert to magnitude ---
-                    // Overflow corner case: INT_MIN / -1  (RISC-V: quotient=INT_MIN, rem=0)
                     if ((funct3 == 3'b100 || funct3 == 3'b110) &&
                         read1_data_reg == 32'h8000_0000 &&
                         read2_data_reg == 32'hFFFF_FFFF) begin
@@ -595,13 +567,11 @@ always @(posedge clk or negedge rst_n) begin
                         write_enable <= 1;
                         state        <= return_state;
                     end else begin
-                        // Determine output sign
                         div_quot_neg <= (funct3 == 3'b100 || funct3 == 3'b110) &&
                                         (read1_data_reg[31] ^ read2_data_reg[31]);
                         div_rem_neg  <= (funct3 == 3'b100 || funct3 == 3'b110) &&
                                         read1_data_reg[31];
 
-                        // Work in unsigned magnitudes
                         div_dividend_r <= ((funct3 == 3'b100 || funct3 == 3'b110) && read1_data_reg[31])
                                           ? (~read1_data_reg + 32'd1)
                                           : read1_data_reg;
@@ -609,10 +579,6 @@ always @(posedge clk or negedge rst_n) begin
                                           ? (~read2_data_reg + 32'd1)
                                           : read2_data_reg;
 
-                        // --- Early exit: skip leading-zero iterations ---
-                        // We only need N iterations where N = 32 - lz(dividend)
-                        // (The divisor having more leading zeros is fine; the
-                        //  loop will just produce 0-bits in those positions.)
                         begin : setup_iters
                             reg [5:0] lz_dd;
                             reg [5:0] total;
@@ -620,10 +586,9 @@ always @(posedge clk or negedge rst_n) begin
                                         ((funct3 == 3'b100 || funct3 == 3'b110) && read1_data_reg[31])
                                         ? (~read1_data_reg + 32'd1)
                                         : read1_data_reg);
-                            // Minimum of 1 iteration
                             total = (lz_dd >= 6'd31) ? 6'd1 : (6'd32 - lz_dd);
                             div_total_iter <= total;
-                            div_iter       <= total - 6'd1; // will count down to 0
+                            div_iter       <= total - 6'd1;
                         end
 
                         div_partial <= 33'd0;
@@ -633,36 +598,26 @@ always @(posedge clk or negedge rst_n) begin
                 end
             end
 
-            // Iterative restoring binary long-division
-            // Each cycle: shift partial remainder left by 1, bring in next dividend bit,
-            // try to subtract divisor; if result >= 0 keep it and set quotient bit.
             C_DIV_WAIT: begin
                 begin : div_step
-                    // Bit index for this iteration (MSB first)
-                    // iteration 0 corresponds to bit (div_total_iter-1) of dividend
                     reg [5:0]  bit_idx;
                     reg [32:0] shifted;
                     reg [32:0] subtracted;
-                    bit_idx   = div_iter;             // bit position in dividend
+                    bit_idx   = div_iter;
                     shifted   = {div_partial[31:0], div_dividend_r[bit_idx]};
                     subtracted = shifted - {1'b0, div_divisor_r};
 
                     if (!subtracted[32]) begin
-                        // Remainder >= 0: keep subtracted, quotient bit = 1
                         div_partial  <= subtracted;
                         div_quotient <= div_quotient | (32'd1 << bit_idx);
                     end else begin
-                        // Remainder < 0: restore, quotient bit = 0
                         div_partial  <= shifted;
-                        // quotient bit stays 0
                     end
                 end
 
                 if (div_iter == 6'd0) begin
-                    // Last iteration done — apply sign correction and write result
                     write_enable <= 1;
                     if (div_is_rem) begin
-                        // remainder sign follows dividend sign
                         write_data <= div_rem_neg
                                       ? (~div_partial[31:0] + 32'd1)
                                       : div_partial[31:0];
@@ -796,22 +751,14 @@ always @(posedge clk or negedge rst_n) begin
                 state <= C_EXECUTE;
             end
 
-            // ========================================================
-            // I/O OPERATIONS
-            // ========================================================
             C_IO_READ: begin
                 if (data_addr == 32'h4010_0000) begin
-                    // doomgeneric DG_GetKey: live key-state bitmask
                     write_data <= ps2_data;
                 end else if (data_addr == 32'h4010_0004) begin
-                    // doomgeneric DG_GetKey: last key event {press[31], doomkey[7:0]}
-                    // C kodu bu adresi KEY_EV_VALID pulse'dan sonra okur
                     write_data <= ps2_key_event;
                 end else if (data_addr == 32'h4030_0000) begin
-                    // doomgeneric DG_GetTicksMs
                     write_data <= ms_counter;
                 end else if (data_addr == 32'h4040_0000) begin
-                    // doomgeneric DG_DrawFrame vsync bekleme
                     write_data <= {31'd0, hdmi_vsync};
                 end else begin
                     write_data <= 32'd0;
@@ -821,21 +768,23 @@ always @(posedge clk or negedge rst_n) begin
             end
 
             C_IO_WRITE: begin
-                // Framebuffer aperture (0x4000_0000) removed: FB now in DDR @ 0x0200_0000
                 if (data_addr == 32'h4020_0000) begin
                     cpu_uart_msg <= cpu_store_data;
                     cpu_byte_idx <= 0;
                     return_state <= C_EXECUTE;
                     state <= C_UART_SEND;
                 end
+                // FIX 5: Double-buffer swap register
+                else if (data_addr == 32'h4050_0000) begin
+                    cpu_fb_swap_data <= cpu_store_data;
+                    cpu_fb_swap_en   <= 1;
+                    state <= C_EXECUTE;
+                end
                 else begin
                     state <= C_EXECUTE;
                 end
             end
 
-            // ========================================================
-            // THE WRAP-UP STATE & PREFETCH TRIGGER
-            // ========================================================
             C_EXECUTE: begin
                 write_enable <= 0;
 
@@ -851,7 +800,10 @@ always @(posedge clk or negedge rst_n) begin
                 end
             end
 
-            // --- THE BACKGROUND PREFETCHER STATES ---
+            // =================================================================
+            // FIX 3: C_PREFETCH_CLEANUP kaldırıldı
+            // cpu_ddr_cmd_en top-of-block auto-clear ile temizleniyor
+            // =================================================================
             C_PREFETCH_ISSUE: begin
                 if (ddr_cmd_ready) begin
                     cpu_ddr_cmd <= 3'b001;
@@ -865,18 +817,10 @@ always @(posedge clk or negedge rst_n) begin
                         2'd3: rq_addr_3 <= {program_counter[27:4], 3'b000} + 27'd8;
                     endcase
                     rq_head <= rq_head + 2'd1;
-                    state <= C_PREFETCH_CLEANUP;
+                    state <= C_LOAD_INSTR;  // FIX 3: doğrudan LOAD_INSTR'a
                 end
             end
 
-            C_PREFETCH_CLEANUP: begin
-                cpu_ddr_cmd_en <= 0;
-                state <= C_LOAD_INSTR;
-            end
-
-            // ========================================================
-            // LOAD STATE (BYTE/HALFWORD/WORD)
-            // ========================================================
             C_FINISH_DATA_READ: begin
                 case (data_addr[3:2])
                     2'b00: raw_word = {memory_read_reg[103:96], memory_read_reg[111:104], memory_read_reg[119:112], memory_read_reg[127:120]};
@@ -916,9 +860,6 @@ always @(posedge clk or negedge rst_n) begin
                 state <= C_EXECUTE;
             end
 
-            // ========================================================
-            // STORE STATE (BYTE/HALFWORD/WORD MASKS)
-            // ========================================================
             C_DDR_WAIT_WRITE: begin
                 if (data_addr >= 32'h40000000) begin
                     state <= C_IO_WRITE;
@@ -970,16 +911,12 @@ always @(posedge clk or negedge rst_n) begin
             end
 
             C_DDR_WRITE: begin
-                cpu_ddr_cmd_en <= 0;
                 cpu_ddr_wr_data_en <= 0;
                 cpu_ddr_wr_data_end <= 0;
                 dcache_inv_en <= 0;
                 state <= C_EXECUTE;
             end
 
-            // ========================================================
-            // CRASH / END OF PROGRAM DUMP
-            // ========================================================
             C_HALT: begin
                 dump_reg_idx <= 5'd0;
                 state <= C_HALT_SETUP;
@@ -1014,7 +951,6 @@ always @(posedge clk or negedge rst_n) begin
             default: state <= C_DDR_WAIT_READ;
         endcase
     end
-    // --- CTRL+ESC SOFT REBOOT TRIGGER FOR CPU ---
     else if (cpu_done && ps2_data[4] && ps2_data[7]) begin
         state <= C_DDR_WAIT_READ;
         cpu_ddr_cmd_en <= 0;
@@ -1032,6 +968,8 @@ always @(posedge clk or negedge rst_n) begin
         dump_reg_idx <= 5'd0;
         pending_exec_state <= 0;
         cpu_done <= 0;
+        cpu_fb_swap_en   <= 0;
+        cpu_fb_swap_data <= 0;
 
         rq_head <= 0; rq_tail <= 0; rq_is_data <= 0;
         pf_valid <= 0; dmem_valid <= 0; pf_ready_addr <= 27'h7FFFFFF;
