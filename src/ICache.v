@@ -1,60 +1,48 @@
+
 // =============================================================================
-// ICache.v — Direct-Mapped 4KB Instruction Cache for DOOM FPGA
+// ICache — Direct-Mapped 4KB Instruction Cache
 // =============================================================================
-//
-// Tasarım:
-//   256 satır × 128 bit (4 instrüksiyon per line, 1 DDR3 burst)
-//   Index  : addr[11:4]  → 8 bit → 256 satır
-//   Tag    : addr[31:12] → 20 bit
-//   Offset : addr[3:2]   → 2 bit  → hangi instrüksiyon
-//
-// Hit  → 2 saat (BSRAM read latency)
-// Miss → DDR3 fetch (mevcut mekanizma) + cache doldur
-//
-// BSRAM kullanımı: ~3 blok (data + tag)
+// 256 satır × 128 bit (4 instrüksiyon = 1 DDR3 burst per line)
+// Index  : addr[11:4]  → 8 bit → 256 satır
+// Tag    : addr[31:12] → 20 bit
+// Offset : addr[3:2]   → 2 bit  → hangi instrüksiyon
+// Hit    → 2 saat (BSRAM read latency)
+// Miss   → DDR3 fetch (mevcut mekanizma) + cache doldur
 // =============================================================================
 module ICache (
     input  wire        clk,
     input  wire        rst_n,
-
-    // CPU'dan gelen fetch isteği
-    input  wire [31:0] cpu_addr,    // instrüksiyon adresi
-    input  wire        cpu_req,     // 1 = fetch isteği var
-
-    // CPU'ya dönen cevap
-    output reg  [31:0] cpu_data,    // instrüksiyon
-    output reg         cpu_valid,   // 1 = geçerli data
-    output wire        cache_hit,   // 1 = hit (kombinasyonel)
-
-    // DDR3 miss sonrası cache doldurma
-    input  wire [31:0]  fill_addr,   // doldurulacak adres
-    input  wire [127:0] fill_data,   // DDR3'ten gelen 4×32-bit burst
-    input  wire         fill_en      // 1 = yaz
+    // CPU fetch isteği
+    input  wire [31:0] cpu_addr,
+    input  wire        cpu_req,
+    // CPU'ya cevap
+    output reg  [31:0] cpu_data,
+    output reg         cpu_valid,
+    output wire        cache_hit,   // kombinasyonel
+    // DDR3 miss → cache doldur
+    input  wire [31:0]  fill_addr,
+    input  wire [127:0] fill_data,
+    input  wire         fill_en
 );
 
 // ---------------------------------------------------------------------------
-// 1. Cache belleği (Gowin BRAM olarak sentezlenir)
+// Cache belleği (Gowin BSRAM olarak sentezlenir)
 // ---------------------------------------------------------------------------
-// Data BRAM: 256 × 128 bit
 reg [127:0] data_mem [0:255];
-
-// Tag BRAM: 256 × 21 bit (20-bit tag + 1-bit valid)
-reg [20:0]  tag_mem  [0:255];
+reg [20:0]  tag_mem  [0:255];   // [20]=valid, [19:0]=tag
 
 // ---------------------------------------------------------------------------
-// 2. Kombinasyonel hit tespiti
+// Kombinasyonel hit tespiti
 // ---------------------------------------------------------------------------
-wire [7:0]  idx     = cpu_addr[11:4];
-wire [19:0] tag     = cpu_addr[31:12];
-wire [1:0]  word_sel= cpu_addr[3:2];
+wire [7:0]  idx      = cpu_addr[11:4];
+wire [19:0] req_tag  = cpu_addr[31:12];
+wire        hit_v    = tag_mem[idx][20];
+wire [19:0] hit_tag  = tag_mem[idx][19:0];
 
-wire        tag_valid   = tag_mem[idx][20];
-wire [19:0] stored_tag  = tag_mem[idx][19:0];
-
-assign cache_hit = cpu_req & tag_valid & (stored_tag == tag);
+assign cache_hit = hit_v & (hit_tag == req_tag);
 
 // ---------------------------------------------------------------------------
-// 3. Hit: Data servis
+// Hit: BSRAM okuma (1 saat gecikme)
 // ---------------------------------------------------------------------------
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -62,10 +50,8 @@ always @(posedge clk or negedge rst_n) begin
         cpu_valid <= 1'b0;
     end else begin
         cpu_valid <= 1'b0;
-
         if (cpu_req & cache_hit) begin
-            // 1 saat gecikme ile instrüksiyonu sun
-            case (word_sel)
+            case (cpu_addr[3:2])
                 2'd0: cpu_data <= data_mem[idx][31:0];
                 2'd1: cpu_data <= data_mem[idx][63:32];
                 2'd2: cpu_data <= data_mem[idx][95:64];
@@ -77,7 +63,7 @@ always @(posedge clk or negedge rst_n) begin
 end
 
 // ---------------------------------------------------------------------------
-// 4. Miss → Fill (DDR3'ten gelen 128-bit burst cache'e yazılır)
+// Fill: DDR3'ten gelen 128-bit burst cache'e yaz
 // ---------------------------------------------------------------------------
 always @(posedge clk) begin
     if (fill_en) begin
@@ -87,13 +73,13 @@ always @(posedge clk) begin
 end
 
 // ---------------------------------------------------------------------------
-// 5. Reset: valid bitleri temizle
+// Reset: valid bitleri temizle (initial block — Gowin destekler)
 // ---------------------------------------------------------------------------
-integer i;
+integer ci;
 initial begin
-    for (i = 0; i < 256; i = i + 1) begin
-        tag_mem[i]  = 21'd0;  // valid=0
-        data_mem[i] = 128'd0;
+    for (ci = 0; ci < 256; ci = ci + 1) begin
+        tag_mem[ci]  = 21'd0;
+        data_mem[ci] = 128'd0;
     end
 end
 

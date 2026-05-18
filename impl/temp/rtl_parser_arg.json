@@ -10,6 +10,10 @@
    "Type" : "verilog"
   },
   {
+   "Path" : "C:/Users/BEK/repos/DOOM/src/ICache.v",
+   "Type" : "verilog"
+  },
+  {
    "Path" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
    "Type" : "verilog"
   },
@@ -55,6 +59,10 @@
   },
   {
    "Path" : "C:/Users/BEK/repos/DOOM/src/rpll_270/rpll_270.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
    "Type" : "verilog"
   }
  ],
