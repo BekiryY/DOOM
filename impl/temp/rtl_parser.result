@@ -117,7 +117,7 @@
     "SubInsts" : [
      {
       "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 61,
+      "InstLine" : 62,
       "InstName" : "cpu_register_controller",
       "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
       "ModuleLine" : 1,
@@ -125,7 +125,7 @@
      },
      {
       "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 231,
+      "InstLine" : 232,
       "InstName" : "dcache_inst",
       "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
       "ModuleLine" : 5,
