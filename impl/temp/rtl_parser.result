@@ -1,153 +1,153 @@
 [
  {
-  "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
+  "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
   "InstLine" : 1,
   "InstName" : "Main_Computer",
-  "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
+  "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
   "ModuleLine" : 1,
   "ModuleName" : "Main_Computer",
   "SubInsts" : [
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 165,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 171,
     "InstName" : "icache_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ICache.v",
-    "ModuleLine" : 11,
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/ICache.v",
+    "ModuleLine" : 12,
     "ModuleName" : "ICache"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 181,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 187,
     "InstName" : "rpll_270_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/rpll_270/rpll_270.v",
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/rpll_270/rpll_270.v",
     "ModuleLine" : 10,
     "ModuleName" : "rpll_270"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 187,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 193,
     "InstName" : "r_clock",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll/gowin_rpll.v",
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/gowin_rpll/gowin_rpll.v",
     "ModuleLine" : 10,
     "ModuleName" : "Gowin_rPLL"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 194,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 200,
     "InstName" : "main_ram",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
     "ModuleLine" : 11484,
     "ModuleName" : "DDR3_Memory_Interface_Top",
     "SubInsts" : [
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
+      "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
       "InstLine" : 11569,
       "InstName" : "gw3_top",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
+      "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
       "ModuleLine" : 10,
       "ModuleName" : "~GW_DDR3_PHY_MC.DDR3_Memory_Interface_Top"
      }
     ]
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 249,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 253,
     "InstName" : "debug_uart",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/UART.v",
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/UART.v",
     "ModuleLine" : 1,
     "ModuleName" : "UART_Controller"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 271,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 275,
     "InstName" : "spi_inst",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/SPI.v",
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/SPI.v",
     "ModuleLine" : 1,
     "ModuleName" : "SPI_Controller"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 467,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 470,
     "InstName" : "keyboard",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/PS2_Controller.v",
-    "ModuleLine" : 28,
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/PS2_Controller.v",
+    "ModuleLine" : 9,
     "ModuleName" : "PS2_Controller"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 488,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 489,
     "InstName" : "u_Gowin_rPLL_VGA",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll_2/gowin_rpll_2.v",
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/gowin_rpll_2/gowin_rpll_2.v",
     "ModuleLine" : 10,
     "ModuleName" : "Gowin_rPLL_VGA"
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 516,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 515,
     "InstName" : "u_hdmi",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/HDMI_Top.v",
     "ModuleLine" : 4,
     "ModuleName" : "HDMI_Top",
     "SubInsts" : [
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
+      "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/HDMI_Top.v",
       "InstLine" : 88,
       "InstName" : "u_dvi_tx",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/dvi_tx/dvi_tx.v",
+      "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/dvi_tx/dvi_tx.v",
       "ModuleLine" : 9,
       "ModuleName" : "DVI_TX_Top"
      },
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
+      "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/HDMI_Top.v",
       "InstLine" : 39,
       "InstName" : "u_vga",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/VGA.v",
-      "ModuleLine" : 11,
+      "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/VGA.v",
+      "ModuleLine" : 7,
       "ModuleName" : "VGA_Controller"
      }
     ]
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 598,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 586,
     "InstName" : "u_cpu",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-    "ModuleLine" : 1,
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/cpu.v",
+    "ModuleLine" : 7,
     "ModuleName" : "cpu",
     "SubInsts" : [
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 61,
+      "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/cpu.v",
+      "InstLine" : 64,
       "InstName" : "cpu_register_controller",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
+      "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/CPU_Registers.v",
       "ModuleLine" : 1,
       "ModuleName" : "CPU_Registers"
      },
      {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 220,
+      "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/cpu.v",
+      "InstLine" : 203,
       "InstName" : "dcache_inst",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
+      "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/DCache.v",
       "ModuleLine" : 5,
       "ModuleName" : "DCache"
      }
     ]
    },
    {
-    "InstFile" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
-    "InstLine" : 668,
+    "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
+    "InstLine" : 656,
     "InstName" : "u_fb_dma",
-    "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/fb_dma.v",
-    "ModuleLine" : 18,
+    "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/fb_dma.v",
+    "ModuleLine" : 5,
     "ModuleName" : "fb_dma"
    }
   ]
  },
  {
-  "InstFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
+  "InstFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/gowin_sdpb/gowin_sdpb.v",
   "InstLine" : 10,
   "InstName" : "Gowin_SDPB_VRAM",
-  "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
+  "ModuleFile" : "C:/Users/musta/Documents/GitHub/DOOM/src/gowin_sdpb/gowin_sdpb.v",
   "ModuleLine" : 10,
   "ModuleName" : "Gowin_SDPB_VRAM"
  }

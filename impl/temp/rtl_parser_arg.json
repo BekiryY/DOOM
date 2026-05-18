@@ -2,71 +2,71 @@
  "Device" : "GW2A-18C",
  "Files" : [
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/CPU_Registers.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/CPU_Registers.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/DCache.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/HDMI_Top.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/HDMI_Top.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/ICache.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/ICache.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/Mainv3.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/Mainv3.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/PS2_Controller.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/PS2_Controller.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/SPI.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/SPI.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/UART.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/UART.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/VGA.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/VGA.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/cpu.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/ddr3_memory_interface/ddr3_memory_interface.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/dvi_tx/dvi_tx.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/dvi_tx/dvi_tx.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll/gowin_rpll.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/fb_dma.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/gowin_rpll_2/gowin_rpll_2.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/gowin_rpll/gowin_rpll.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/gowin_sdpb/gowin_sdpb.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/gowin_rpll_2/gowin_rpll_2.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/rpll_270/rpll_270.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/gowin_sdpb/gowin_sdpb.v",
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/fb_dma.v",
+   "Path" : "C:/Users/musta/Documents/GitHub/DOOM/src/rpll_270/rpll_270.v",
    "Type" : "verilog"
   }
  ],
@@ -74,7 +74,7 @@
 
  ],
  "LoopLimit" : 2000,
- "ResultFile" : "C:/Users/BEK/repos/DOOM/impl/temp/rtl_parser.result",
+ "ResultFile" : "C:/Users/musta/Documents/GitHub/DOOM/impl/temp/rtl_parser.result",
  "Top" : "Main_Computer",
  "VerilogStd" : "verilog_2001",
  "VhdlStd" : "vhdl_93"
