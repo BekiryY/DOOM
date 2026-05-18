@@ -72,20 +72,26 @@ def rx_thread():
         except Exception as e:
             print(f"\n[RX ERROR] {e}", flush=True)
             break
-        
+
 def on_key(e):
     name = e.name.lower()
-    if name not in KEY_MAP:
-        return
-    idx = KEY_MAP[name]
+    idx = KEY_MAP.get(name, 0xFF)  # 0xFF = unmapped sentinel
+
     if e.event_type == 'down' and name not in held:
         held.add(name)
         ser.write(bytes([0x01, idx]))
-        print(f"[TX] press   → {name} (bit {idx})", flush=True)
+        if idx == 0xFF:
+            print(f"[TX] press   → '{name}' (UNMAPPED, sent 0xFF)", flush=True)
+        else:
+            print(f"[TX] press   → '{name}' (bit {idx})", flush=True)
+
     elif e.event_type == 'up' and name in held:
         held.discard(name)
         ser.write(bytes([0x00, idx]))
-        print(f"[TX] release → {name} (bit {idx})", flush=True)
+        if idx == 0xFF:
+            print(f"[TX] release → '{name}' (UNMAPPED, sent 0xFF)", flush=True)
+        else:
+            print(f"[TX] release → '{name}' (bit {idx})", flush=True)
 
 print(f"Connected to {PORT} @ {BAUD} baud")
 print("Keys: W/A/S/D, Ctrl, Space, Shift, Esc, Enter")
