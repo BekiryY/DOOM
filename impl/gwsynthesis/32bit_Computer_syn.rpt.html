@@ -56,19 +56,20 @@ table.detail_table td.label { min-width: 100px; width: 8%;}
 <tr>
 <td class="label">Design File</td>
 <td>C:\Users\BEK\repos\DOOM\src\CPU_Registers.v<br>
+C:\Users\BEK\repos\DOOM\src\DCache.v<br>
 C:\Users\BEK\repos\DOOM\src\HDMI_Top.v<br>
+C:\Users\BEK\repos\DOOM\src\ICache.v<br>
 C:\Users\BEK\repos\DOOM\src\Mainv3.v<br>
 C:\Users\BEK\repos\DOOM\src\PS2_Controller.v<br>
 C:\Users\BEK\repos\DOOM\src\SPI.v<br>
 C:\Users\BEK\repos\DOOM\src\UART.v<br>
 C:\Users\BEK\repos\DOOM\src\VGA.v<br>
+C:\Users\BEK\repos\DOOM\src\cpu.v<br>
 C:\Users\BEK\repos\DOOM\src\ddr3_memory_interface\ddr3_memory_interface.v<br>
 C:\Users\BEK\repos\DOOM\src\dvi_tx\dvi_tx.v<br>
 C:\Users\BEK\repos\DOOM\src\gowin_rpll\gowin_rpll.v<br>
 C:\Users\BEK\repos\DOOM\src\gowin_rpll_2\gowin_rpll_2.v<br>
 C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v<br>
-C:\Users\BEK\repos\DOOM\src\integer_division_signed.v<br>
-C:\Users\BEK\repos\DOOM\src\integer_division_uns.v<br>
 C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </td>
 </tr>
@@ -94,7 +95,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">Created Time</td>
-<td>Mon May 18 14:36:34 2026
+<td>Mon May 18 15:06:43 2026
 </td>
 </tr>
 <tr>
@@ -110,11 +111,11 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">Synthesis Process</td>
-<td>Running parser:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 2s, Elapsed time = 0h 0m 2s, Peak memory usage = 311.633MB<br/>Running netlist conversion:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 0s, Elapsed time = 0h 0m 0s, Peak memory usage = 0MB<br/>Running device independent optimization:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 0: CPU time = 0h 0m 2s, Elapsed time = 0h 0m 2s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 1: CPU time = 0h 0m 0.843s, Elapsed time = 0h 0m 0.841s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 2: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s, Peak memory usage = 311.633MB<br/>Running inference:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 0: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 1: CPU time = 0h 0m 0.203s, Elapsed time = 0h 0m 0.176s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 2: CPU time = 0h 0m 0.093s, Elapsed time = 0h 0m 0.119s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 3: CPU time = 0h 0m 0.078s, Elapsed time = 0h 0m 0.074s, Peak memory usage = 311.633MB<br/>Running technical mapping:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 0: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 1: CPU time = 0h 0m 0.437s, Elapsed time = 0h 0m 0.427s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 2: CPU time = 0h 0m 0.328s, Elapsed time = 0h 0m 0.331s, Peak memory usage = 311.633MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 3: CPU time = 0h 0m 12s, Elapsed time = 0h 0m 12s, Peak memory usage = 313.090MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 4: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 2s, Peak memory usage = 313.090MB<br/>Generate output files:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 1s, Elapsed time = 0h 0m 2s, Peak memory usage = 373.297MB<br/></td>
+<td>Running parser:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s, Peak memory usage = 267.508MB<br/>Running netlist conversion:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 0s, Elapsed time = 0h 0m 0s, Peak memory usage = 0MB<br/>Running device independent optimization:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 0: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 1: CPU time = 0h 0m 0.39s, Elapsed time = 0h 0m 0.394s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Optimizing Phase 2: CPU time = 0h 0m 0.828s, Elapsed time = 0h 0m 0.87s, Peak memory usage = 267.508MB<br/>Running inference:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 0: CPU time = 0h 0m 0.75s, Elapsed time = 0h 0m 0.769s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 1: CPU time = 0h 0m 0.109s, Elapsed time = 0h 0m 0.127s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 2: CPU time = 0h 0m 0.062s, Elapsed time = 0h 0m 0.057s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Inferring Phase 3: CPU time = 0h 0m 0.031s, Elapsed time = 0h 0m 0.039s, Peak memory usage = 267.508MB<br/>Running technical mapping:<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 0: CPU time = 0h 0m 0.984s, Elapsed time = 0h 0m 0.987s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 1: CPU time = 0h 0m 0.25s, Elapsed time = 0h 0m 0.246s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 2: CPU time = 0h 0m 0.156s, Elapsed time = 0h 0m 0.16s, Peak memory usage = 267.508MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 3: CPU time = 0h 0m 12s, Elapsed time = 0h 0m 12s, Peak memory usage = 281.066MB<br/>&nbsp;&nbsp;&nbsp;&nbsp;Tech-Mapping Phase 4: CPU time = 0h 0m 0.89s, Elapsed time = 0h 0m 1s, Peak memory usage = 281.066MB<br/>Generate output files:<br/>&nbsp;&nbsp;&nbsp;&nbsp;CPU time = 0h 0m 1s, Elapsed time = 0h 0m 0.959s, Peak memory usage = 305.816MB<br/></td>
 </tr>
 <tr>
 <td class="label">Total Time and Memory Usage</td>
-<td>CPU time = 0h 0m 22s, Elapsed time = 0h 0m 24s, Peak memory usage = 373.297MB</td>
+<td>CPU time = 0h 0m 19s, Elapsed time = 0h 0m 19s, Peak memory usage = 305.816MB</td>
 </tr>
 </table>
 <h1><a name="resource">Resource</a></h1>
@@ -162,7 +163,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label"><b>Register </b></td>
-<td>9861</td>
+<td>3400</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspDFF</td>
@@ -170,7 +171,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspDFFE</td>
-<td>1112</td>
+<td>1177</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspDFFS</td>
@@ -198,27 +199,27 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspDFFC</td>
-<td>7422</td>
+<td>892</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspDFFCE</td>
-<td>1025</td>
+<td>1029</td>
 </tr>
 <tr>
 <td class="label"><b>LUT </b></td>
-<td>6348</td>
+<td>6207</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspLUT2</td>
-<td>638</td>
+<td>597</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspLUT3</td>
-<td>2330</td>
+<td>2148</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspLUT4</td>
-<td>3380</td>
+<td>3462</td>
 </tr>
 <tr>
 <td class="label"><b>MUX </b></td>
@@ -230,11 +231,11 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label"><b>ALU </b></td>
-<td>2605</td>
+<td>528</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspALU</td>
-<td>2605</td>
+<td>528</td>
 </tr>
 <tr>
 <td class="label"><b>SSRAM </b></td>
@@ -250,11 +251,11 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label"><b>INV </b></td>
-<td>157</td>
+<td>32</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp&nbsp&nbspINV</td>
-<td>157</td>
+<td>32</td>
 </tr>
 <tr>
 <td class="label"><b>IOLOGIC </b></td>
@@ -330,13 +331,13 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">Logic</td>
-<td>10625(6694 LUT, 2605 ALU, 221 RAM16) / 20736</td>
-<td>52%</td>
+<td>8282(6428 LUT, 528 ALU, 221 RAM16) / 20736</td>
+<td>40%</td>
 </tr>
 <tr>
 <td class="label">Register</td>
-<td>9861 / 16173</td>
-<td>61%</td>
+<td>3400 / 16173</td>
+<td>22%</td>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp--Register as Latch</td>
@@ -345,8 +346,8 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">&nbsp&nbsp--Register as FF</td>
-<td>9861 / 16173</td>
-<td>61%</td>
+<td>3400 / 16173</td>
+<td>22%</td>
 </tr>
 <tr>
 <td class="label">BSRAM</td>
@@ -588,8 +589,8 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>4</td>
 <td>main_ram/gw3_top/i4/fclkdiv/CLKOUT.default_gen_clk</td>
 <td>100.000(MHz)</td>
-<td>93.756(MHz)</td>
-<td>10</td>
+<td>85.543(MHz)</td>
+<td>9</td>
 <td>TOP</td>
 </tr>
 </table>
@@ -599,11 +600,11 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <table class="summary_table">
 <tr>
 <td class="label">Slack</td>
-<td>-6.738</td>
+<td>-8.326</td>
 </tr>
 <tr>
 <td class="label">Data Arrival Time</td>
-<td>1277.369</td>
+<td>1278.957</td>
 </tr>
 <tr>
 <td class="label">Data Required Time</td>
@@ -611,11 +612,11 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">From</td>
-<td>u_hdmi/u_vga/v_cnt_8_s0</td>
+<td>u_hdmi/u_vga/v_cnt_4_s0</td>
 </tr>
 <tr>
 <td class="label">To</td>
-<td>write_data_0_s0</td>
+<td>u_cpu/write_data_0_s0</td>
 </tr>
 <tr>
 <td class="label">Launch Clk</td>
@@ -658,15 +659,15 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tNET</td>
 <td>RR</td>
 <td>1</td>
-<td>u_hdmi/u_vga/v_cnt_8_s0/CLK</td>
+<td>u_hdmi/u_vga/v_cnt_4_s0/CLK</td>
 </tr>
 <tr>
 <td>1270.774</td>
 <td>0.232</td>
 <td>tC2Q</td>
 <td>RF</td>
-<td>7</td>
-<td>u_hdmi/u_vga/v_cnt_8_s0/Q</td>
+<td>9</td>
+<td>u_hdmi/u_vga/v_cnt_4_s0/Q</td>
 </tr>
 <tr>
 <td>1271.248</td>
@@ -674,15 +675,15 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tNET</td>
 <td>FF</td>
 <td>1</td>
-<td>u_hdmi/u_vga/hdmi_vsync_s0/I1</td>
+<td>u_hdmi/u_vga/v_offset_4_s4/I1</td>
 </tr>
 <tr>
 <td>1271.803</td>
 <td>0.555</td>
 <td>tINS</td>
 <td>FF</td>
-<td>1</td>
-<td>u_hdmi/u_vga/hdmi_vsync_s0/F</td>
+<td>3</td>
+<td>u_hdmi/u_vga/v_offset_4_s4/F</td>
 </tr>
 <tr>
 <td>1272.277</td>
@@ -690,7 +691,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tNET</td>
 <td>FF</td>
 <td>1</td>
-<td>u_hdmi/u_vga/hdmi_vsync_s/I0</td>
+<td>u_hdmi/u_vga/vga_read_en_s1/I0</td>
 </tr>
 <tr>
 <td>1272.794</td>
@@ -698,7 +699,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tINS</td>
 <td>FF</td>
 <td>2</td>
-<td>u_hdmi/u_vga/hdmi_vsync_s/F</td>
+<td>u_hdmi/u_vga/vga_read_en_s1/F</td>
 </tr>
 <tr>
 <td>1273.268</td>
@@ -706,15 +707,15 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tNET</td>
 <td>FF</td>
 <td>1</td>
-<td>n10428_s101/I2</td>
+<td>u_hdmi/u_vga/hdmi_vsync_s/I2</td>
 </tr>
 <tr>
 <td>1273.721</td>
 <td>0.453</td>
 <td>tINS</td>
 <td>FF</td>
-<td>1</td>
-<td>n10428_s101/F</td>
+<td>2</td>
+<td>u_hdmi/u_vga/hdmi_vsync_s/F</td>
 </tr>
 <tr>
 <td>1274.195</td>
@@ -722,71 +723,103 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tNET</td>
 <td>FF</td>
 <td>1</td>
-<td>n10428_s97/I0</td>
+<td>u_cpu/n8927_s125/I3</td>
 </tr>
 <tr>
-<td>1274.712</td>
+<td>1274.566</td>
+<td>0.371</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8927_s125/F</td>
+</tr>
+<tr>
+<td>1275.040</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8927_s114/I3</td>
+</tr>
+<tr>
+<td>1275.411</td>
+<td>0.371</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8927_s114/F</td>
+</tr>
+<tr>
+<td>1275.885</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8927_s107/I2</td>
+</tr>
+<tr>
+<td>1276.338</td>
+<td>0.453</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8927_s107/F</td>
+</tr>
+<tr>
+<td>1276.812</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8927_s149/I0</td>
+</tr>
+<tr>
+<td>1277.329</td>
 <td>0.517</td>
 <td>tINS</td>
 <td>FF</td>
 <td>1</td>
-<td>n10428_s97/F</td>
+<td>u_cpu/n8927_s149/F</td>
 </tr>
 <tr>
-<td>1275.186</td>
+<td>1277.803</td>
 <td>0.474</td>
 <td>tNET</td>
 <td>FF</td>
 <td>1</td>
-<td>n10428_s151/I1</td>
+<td>u_cpu/n8927_s146/I1</td>
 </tr>
 <tr>
-<td>1275.741</td>
-<td>0.555</td>
-<td>tINS</td>
-<td>FF</td>
-<td>1</td>
-<td>n10428_s151/F</td>
-</tr>
-<tr>
-<td>1276.215</td>
-<td>0.474</td>
-<td>tNET</td>
-<td>FF</td>
-<td>1</td>
-<td>n10428_s148/I1</td>
-</tr>
-<tr>
-<td>1276.318</td>
+<td>1277.906</td>
 <td>0.103</td>
 <td>tINS</td>
 <td>FF</td>
 <td>1</td>
-<td>n10428_s148/O</td>
+<td>u_cpu/n8927_s146/O</td>
 </tr>
 <tr>
-<td>1276.792</td>
+<td>1278.380</td>
 <td>0.474</td>
 <td>tNET</td>
 <td>FF</td>
 <td>1</td>
-<td>n10428_s87/I0</td>
+<td>u_cpu/n8927_s99/I0</td>
 </tr>
 <tr>
-<td>1276.895</td>
+<td>1278.483</td>
 <td>0.103</td>
 <td>tINS</td>
 <td>FF</td>
 <td>1</td>
-<td>n10428_s87/O</td>
+<td>u_cpu/n8927_s99/O</td>
 </tr>
 <tr>
-<td>1277.369</td>
+<td>1278.957</td>
 <td>0.474</td>
 <td>tNET</td>
 <td>FF</td>
 <td>1</td>
-<td>write_data_0_s0/D</td>
+<td>u_cpu/write_data_0_s0/D</td>
 </tr>
 </table>
 <b>Data Required Path:</b>
@@ -812,7 +845,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>0.341</td>
 <td>tCL</td>
 <td>RR</td>
-<td>10043</td>
+<td>3582</td>
 <td>main_ram/gw3_top/i4/fclkdiv/CLKOUT</td>
 </tr>
 <tr>
@@ -821,7 +854,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tNET</td>
 <td>RR</td>
 <td>1</td>
-<td>write_data_0_s0/CLK</td>
+<td>u_cpu/write_data_0_s0/CLK</td>
 </tr>
 <tr>
 <td>1270.666</td>
@@ -829,7 +862,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tUnc</td>
 <td> </td>
 <td> </td>
-<td>write_data_0_s0</td>
+<td>u_cpu/write_data_0_s0</td>
 </tr>
 <tr>
 <td>1270.631</td>
@@ -837,7 +870,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tSu</td>
 <td> </td>
 <td>1</td>
-<td>write_data_0_s0</td>
+<td>u_cpu/write_data_0_s0</td>
 </tr>
 </table>
 <b>Path Statistics:</b>
@@ -852,12 +885,12 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">Logic Level:</td>
-<td>6</td>
+<td>8</td>
 </tr>
 <tr>
 <td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.360, 100.000%</td></tr>
 <tr>
-<td class="label">Arrival Data Path Delay:</td><td> cell: 2.803, 41.058%; route: 3.792, 55.544%; tC2Q: 0.232, 3.398%</td></tr>
+<td class="label">Arrival Data Path Delay:</td><td> cell: 3.443, 40.915%; route: 4.740, 56.328%; tC2Q: 0.232, 2.757%</td></tr>
 <tr>
 <td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.360, 100.000%</td></tr>
 </table>
@@ -917,7 +950,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>0.341</td>
 <td>tCL</td>
 <td>RR</td>
-<td>10043</td>
+<td>3582</td>
 <td>main_ram/gw3_top/i4/fclkdiv/CLKOUT</td>
 </tr>
 <tr>
@@ -1129,7 +1162,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>0.341</td>
 <td>tCL</td>
 <td>RR</td>
-<td>10043</td>
+<td>3582</td>
 <td>main_ram/gw3_top/i4/fclkdiv/CLKOUT</td>
 </tr>
 <tr>
@@ -1259,6 +1292,282 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <table class="summary_table">
 <tr>
 <td class="label">Slack</td>
+<td>-1.690</td>
+</tr>
+<tr>
+<td class="label">Data Arrival Time</td>
+<td>12.356</td>
+</tr>
+<tr>
+<td class="label">Data Required Time</td>
+<td>10.666</td>
+</tr>
+<tr>
+<td class="label">From</td>
+<td>u_cpu/read2_data_reg_31_s0</td>
+</tr>
+<tr>
+<td class="label">To</td>
+<td>u_cpu/write_data_15_s0</td>
+</tr>
+<tr>
+<td class="label">Launch Clk</td>
+<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT.default_gen_clk[R]</td>
+</tr>
+<tr>
+<td class="label">Latch Clk</td>
+<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT.default_gen_clk[R]</td>
+</tr>
+</table>
+<b>Data Arrival Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>0.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT.default_gen_clk</td>
+</tr>
+<tr>
+<td>0.341</td>
+<td>0.341</td>
+<td>tCL</td>
+<td>RR</td>
+<td>3582</td>
+<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT</td>
+</tr>
+<tr>
+<td>0.701</td>
+<td>0.360</td>
+<td>tNET</td>
+<td>RR</td>
+<td>1</td>
+<td>u_cpu/read2_data_reg_31_s0/CLK</td>
+</tr>
+<tr>
+<td>0.933</td>
+<td>0.232</td>
+<td>tC2Q</td>
+<td>RF</td>
+<td>17</td>
+<td>u_cpu/read2_data_reg_31_s0/Q</td>
+</tr>
+<tr>
+<td>1.407</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>72</td>
+<td>u_cpu/mult_4038_s2/B[31]</td>
+</tr>
+<tr>
+<td>5.187</td>
+<td>3.780</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/mult_4038_s2/DOUT[47]</td>
+</tr>
+<tr>
+<td>5.661</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s131/I1</td>
+</tr>
+<tr>
+<td>6.216</td>
+<td>0.555</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s131/F</td>
+</tr>
+<tr>
+<td>6.690</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s123/I3</td>
+</tr>
+<tr>
+<td>7.061</td>
+<td>0.371</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s123/F</td>
+</tr>
+<tr>
+<td>7.535</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s113/I0</td>
+</tr>
+<tr>
+<td>8.052</td>
+<td>0.517</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s113/F</td>
+</tr>
+<tr>
+<td>8.526</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s104/I2</td>
+</tr>
+<tr>
+<td>8.979</td>
+<td>0.453</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s104/F</td>
+</tr>
+<tr>
+<td>9.453</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s99/I3</td>
+</tr>
+<tr>
+<td>9.824</td>
+<td>0.371</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s99/F</td>
+</tr>
+<tr>
+<td>10.298</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s139/I1</td>
+</tr>
+<tr>
+<td>10.853</td>
+<td>0.555</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s139/F</td>
+</tr>
+<tr>
+<td>11.327</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s138/I1</td>
+</tr>
+<tr>
+<td>11.882</td>
+<td>0.555</td>
+<td>tINS</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/n8912_s138/F</td>
+</tr>
+<tr>
+<td>12.356</td>
+<td>0.474</td>
+<td>tNET</td>
+<td>FF</td>
+<td>1</td>
+<td>u_cpu/write_data_15_s0/D</td>
+</tr>
+</table>
+<b>Data Required Path:</b>
+<table class="summary_table">
+<tr>
+<th>AT</th>
+<th>DELAY</th>
+<th>TYPE</th>
+<th>RF</th>
+<th>FANOUT</th>
+<th>NODE</th>
+</tr>
+<tr>
+<td>10.000</td>
+<td>0.000</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT.default_gen_clk</td>
+</tr>
+<tr>
+<td>10.341</td>
+<td>0.341</td>
+<td>tCL</td>
+<td>RR</td>
+<td>3582</td>
+<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT</td>
+</tr>
+<tr>
+<td>10.701</td>
+<td>0.360</td>
+<td>tNET</td>
+<td>RR</td>
+<td>1</td>
+<td>u_cpu/write_data_15_s0/CLK</td>
+</tr>
+<tr>
+<td>10.666</td>
+<td>-0.035</td>
+<td>tSu</td>
+<td> </td>
+<td>1</td>
+<td>u_cpu/write_data_15_s0</td>
+</tr>
+</table>
+<b>Path Statistics:</b>
+<table class="summary_table">
+<tr>
+<td class="label">Clock Skew:</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td class="label">Setup Relationship:</td>
+<td>10.000</td>
+</tr>
+<tr>
+<td class="label">Logic Level:</td>
+<td>9</td>
+</tr>
+<tr>
+<td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.360, 100.000%</td></tr>
+<tr>
+<td class="label">Arrival Data Path Delay:</td><td> cell: 7.157, 61.407%; route: 4.266, 36.602%; tC2Q: 0.232, 1.991%</td></tr>
+<tr>
+<td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.360, 100.000%</td></tr>
+</table>
+<br/>
+<h3>Path&nbsp5</h3>
+<b>Path Summary:</b></br>
+<table class="summary_table">
+<tr>
+<td class="label">Slack</td>
 <td>-1.608</td>
 </tr>
 <tr>
@@ -1271,7 +1580,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 </tr>
 <tr>
 <td class="label">From</td>
-<td>cpu_done_s1</td>
+<td>u_cpu/cpu_done_s1</td>
 </tr>
 <tr>
 <td class="label">To</td>
@@ -1309,7 +1618,7 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>0.341</td>
 <td>tCL</td>
 <td>RR</td>
-<td>10043</td>
+<td>3582</td>
 <td>main_ram/gw3_top/i4/fclkdiv/CLKOUT</td>
 </tr>
 <tr>
@@ -1318,15 +1627,15 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td>tNET</td>
 <td>RR</td>
 <td>1</td>
-<td>cpu_done_s1/CLK</td>
+<td>u_cpu/cpu_done_s1/CLK</td>
 </tr>
 <tr>
 <td>1230.933</td>
 <td>0.232</td>
 <td>tC2Q</td>
 <td>RF</td>
-<td>421</td>
-<td>cpu_done_s1/Q</td>
+<td>435</td>
+<td>u_cpu/cpu_done_s1/Q</td>
 </tr>
 <tr>
 <td>1231.407</td>
@@ -1402,178 +1711,6 @@ C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v<br>
 <td> </td>
 <td>1</td>
 <td>u_hdmi/u_vga/BLUE_0_s0</td>
-</tr>
-</table>
-<b>Path Statistics:</b>
-<table class="summary_table">
-<tr>
-<td class="label">Clock Skew:</td>
-<td>0.000</td>
-</tr>
-<tr>
-<td class="label">Setup Relationship:</td>
-<td>0.159</td>
-</tr>
-<tr>
-<td class="label">Logic Level:</td>
-<td>2</td>
-</tr>
-<tr>
-<td class="label">Arrival Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.360, 100.000%</td></tr>
-<tr>
-<td class="label">Arrival Data Path Delay:</td><td> cell: 0.517, 30.466%; route: 0.948, 55.863%; tC2Q: 0.232, 13.671%</td></tr>
-<tr>
-<td class="label">Required Clock Path Delay:</td><td> cell: 0.000, 0.000%; route: 0.360, 100.000%</td></tr>
-</table>
-<br/>
-<h3>Path&nbsp5</h3>
-<b>Path Summary:</b></br>
-<table class="summary_table">
-<tr>
-<td class="label">Slack</td>
-<td>-1.608</td>
-</tr>
-<tr>
-<td class="label">Data Arrival Time</td>
-<td>1232.398</td>
-</tr>
-<tr>
-<td class="label">Data Required Time</td>
-<td>1230.790</td>
-</tr>
-<tr>
-<td class="label">From</td>
-<td>cpu_done_s1</td>
-</tr>
-<tr>
-<td class="label">To</td>
-<td>u_hdmi/u_vga/BLUE_1_s0</td>
-</tr>
-<tr>
-<td class="label">Launch Clk</td>
-<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT.default_gen_clk[R]</td>
-</tr>
-<tr>
-<td class="label">Latch Clk</td>
-<td>u_clkdiv5/CLKOUT.default_gen_clk[R]</td>
-</tr>
-</table>
-<b>Data Arrival Path:</b>
-<table class="summary_table">
-<tr>
-<th>AT</th>
-<th>DELAY</th>
-<th>TYPE</th>
-<th>RF</th>
-<th>FANOUT</th>
-<th>NODE</th>
-</tr>
-<tr>
-<td>1230.000</td>
-<td>0.000</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT.default_gen_clk</td>
-</tr>
-<tr>
-<td>1230.341</td>
-<td>0.341</td>
-<td>tCL</td>
-<td>RR</td>
-<td>10043</td>
-<td>main_ram/gw3_top/i4/fclkdiv/CLKOUT</td>
-</tr>
-<tr>
-<td>1230.701</td>
-<td>0.360</td>
-<td>tNET</td>
-<td>RR</td>
-<td>1</td>
-<td>cpu_done_s1/CLK</td>
-</tr>
-<tr>
-<td>1230.933</td>
-<td>0.232</td>
-<td>tC2Q</td>
-<td>RF</td>
-<td>421</td>
-<td>cpu_done_s1/Q</td>
-</tr>
-<tr>
-<td>1231.407</td>
-<td>0.474</td>
-<td>tNET</td>
-<td>FF</td>
-<td>1</td>
-<td>active_display_data_1_s1/I0</td>
-</tr>
-<tr>
-<td>1231.924</td>
-<td>0.517</td>
-<td>tINS</td>
-<td>FF</td>
-<td>1</td>
-<td>active_display_data_1_s1/F</td>
-</tr>
-<tr>
-<td>1232.398</td>
-<td>0.474</td>
-<td>tNET</td>
-<td>FF</td>
-<td>1</td>
-<td>u_hdmi/u_vga/BLUE_1_s0/D</td>
-</tr>
-</table>
-<b>Data Required Path:</b>
-<table class="summary_table">
-<tr>
-<th>AT</th>
-<th>DELAY</th>
-<th>TYPE</th>
-<th>RF</th>
-<th>FANOUT</th>
-<th>NODE</th>
-</tr>
-<tr>
-<td>1230.159</td>
-<td>0.000</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>u_clkdiv5/CLKOUT.default_gen_clk</td>
-</tr>
-<tr>
-<td>1230.500</td>
-<td>0.341</td>
-<td>tCL</td>
-<td>RR</td>
-<td>157</td>
-<td>u_clkdiv5/CLKOUT</td>
-</tr>
-<tr>
-<td>1230.860</td>
-<td>0.360</td>
-<td>tNET</td>
-<td>RR</td>
-<td>1</td>
-<td>u_hdmi/u_vga/BLUE_1_s0/CLK</td>
-</tr>
-<tr>
-<td>1230.825</td>
-<td>-0.035</td>
-<td>tUnc</td>
-<td> </td>
-<td> </td>
-<td>u_hdmi/u_vga/BLUE_1_s0</td>
-</tr>
-<tr>
-<td>1230.790</td>
-<td>-0.035</td>
-<td>tSu</td>
-<td> </td>
-<td>1</td>
-<td>u_hdmi/u_vga/BLUE_1_s0</td>
 </tr>
 </table>
 <b>Path Statistics:</b>

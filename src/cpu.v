@@ -157,38 +157,36 @@ reg [127:0] dmem_read_reg = 0;
 reg         dmem_valid = 0;
 // ----------------------------------------------------
 
-// --- RV32M Divider — IP Core wires ---
-reg         div_is_rem     = 0;  // 1=REM/REMU, 0=DIV/DIVU
-reg         div_is_signed  = 0;  // 1=signed IP, 0=unsigned IP
-reg [5:0]   div_wait_cnt   = 0;  // counts 34 clocks
-reg [31:0]  div_dividend_r = 0;
-reg [31:0]  div_divisor_r  = 0;
+// --- RV32M Divider — fast iterative restoring division ---
+// No Gowin IP cores needed — fully self-contained.
+//
+// Algorithm: unsigned restoring binary long-division.
+// Signed inputs are pre-negated; sign is corrected after.
+// Leading-zero early exit: we only iterate for (32 - lz_skip) cycles,
+// which for typical DOOM operands (<=16-bit) saves ~16 cycles per divide.
 
-// Unsigned division IP outputs
-wire [31:0] div_uns_quotient;
-wire [31:0] div_uns_remainder;
+reg         div_is_rem      = 0;  // 1=REM/REMU, 0=DIV/DIVU
+reg         div_is_signed   = 0;  // 1=DIV/REM (signed)
+reg         div_quot_neg    = 0;  // quotient  must be negated at end
+reg         div_rem_neg     = 0;  // remainder must be negated at end
+reg [5:0]   div_iter        = 0;  // current iteration (counts down)
+reg [5:0]   div_total_iter  = 0;  // total iterations = 32 - lz_skip
+reg [31:0]  div_quotient    = 0;
+reg [32:0]  div_partial     = 0;  // 33-bit partial remainder (MSB = sign)
+reg [31:0]  div_divisor_r   = 0;  // magnitude of divisor
+reg [31:0]  div_dividend_r  = 0;  // magnitude of dividend (shifted out)
 
-// Signed division IP outputs
-wire [31:0] div_sgn_quotient;
-wire [31:0] div_sgn_remainder;
-
-integer_division_uns div_uns_inst (
-    .clk      (clk),
-    .rstn     (rst_n),
-    .dividend (div_dividend_r),
-    .divisor  (div_divisor_r),
-    .remainder(div_uns_remainder),
-    .quotient (div_uns_quotient)
-);
-
-integer_division_signed div_sgn_inst (
-    .clk      (clk),
-    .rstn     (rst_n),
-    .dividend (div_dividend_r),
-    .divisor  (div_divisor_r),
-    .remainder(div_sgn_remainder),
-    .quotient (div_sgn_quotient)
-);
+// Leading-zero count helper (used combinatorially in C_DIV_SETUP)
+function automatic [5:0] count_leading_zeros;
+    input [31:0] v;
+    integer i;
+    begin
+        count_leading_zeros = 6'd32;
+        for (i = 31; i >= 0; i = i - 1)
+            if (v[i] && count_leading_zeros == 6'd32)
+                count_leading_zeros = 6'd31 - i[5:0];
+    end
+endfunction
 
 // --- rs2==0 pre-flag (registered in C_REG_FETCH_WAIT) ---
 
@@ -574,14 +572,13 @@ always @(posedge clk or negedge rst_n) begin
             end
 
             // ========================================================
-            // RV32M — DIVISION / REMAINDER  (34-cycle IP cores)
+            // RV32M — DIVISION / REMAINDER  (iterative restoring, fast)
             // ========================================================
             // funct3: 100=DIV  101=DIVU  110=REM  111=REMU
+            // Latency: (32 - leading_zeros) cycles, typically ~10-16 for DOOM.
             C_DIV_SETUP: begin
-                div_is_signed  <= (funct3 == 3'b100 || funct3 == 3'b110);
-                div_is_rem     <= (funct3 == 3'b110 || funct3 == 3'b111);
-                div_dividend_r <= read1_data_reg;
-                div_divisor_r  <= read2_data_reg;
+                div_is_signed <= (funct3 == 3'b100 || funct3 == 3'b110);
+                div_is_rem    <= (funct3 == 3'b110 || funct3 == 3'b111);
 
                 if (rs2_is_zero) begin
                     // Division by zero — RISC-V spec mandates specific values
@@ -591,22 +588,94 @@ always @(posedge clk or negedge rst_n) begin
                     write_enable <= 1;
                     state        <= return_state;
                 end else begin
-                    div_wait_cnt <= 6'd0;
-                    state        <= C_DIV_WAIT;
+                    // --- Signed: capture sign, convert to magnitude ---
+                    // Overflow corner case: INT_MIN / -1  (RISC-V: quotient=INT_MIN, rem=0)
+                    if ((funct3 == 3'b100 || funct3 == 3'b110) &&
+                        read1_data_reg == 32'h8000_0000 &&
+                        read2_data_reg == 32'hFFFF_FFFF) begin
+                        write_data   <= (funct3 == 3'b110) ? 32'd0 : 32'h8000_0000;
+                        write_enable <= 1;
+                        state        <= return_state;
+                    end else begin
+                        // Determine output sign
+                        div_quot_neg <= (funct3 == 3'b100 || funct3 == 3'b110) &&
+                                        (read1_data_reg[31] ^ read2_data_reg[31]);
+                        div_rem_neg  <= (funct3 == 3'b100 || funct3 == 3'b110) &&
+                                        read1_data_reg[31];
+
+                        // Work in unsigned magnitudes
+                        div_dividend_r <= ((funct3 == 3'b100 || funct3 == 3'b110) && read1_data_reg[31])
+                                          ? (~read1_data_reg + 32'd1)
+                                          : read1_data_reg;
+                        div_divisor_r  <= ((funct3 == 3'b100 || funct3 == 3'b110) && read2_data_reg[31])
+                                          ? (~read2_data_reg + 32'd1)
+                                          : read2_data_reg;
+
+                        // --- Early exit: skip leading-zero iterations ---
+                        // We only need N iterations where N = 32 - lz(dividend)
+                        // (The divisor having more leading zeros is fine; the
+                        //  loop will just produce 0-bits in those positions.)
+                        begin : setup_iters
+                            reg [5:0] lz_dd;
+                            reg [5:0] total;
+                            lz_dd = count_leading_zeros(
+                                        ((funct3 == 3'b100 || funct3 == 3'b110) && read1_data_reg[31])
+                                        ? (~read1_data_reg + 32'd1)
+                                        : read1_data_reg);
+                            // Minimum of 1 iteration
+                            total = (lz_dd >= 6'd31) ? 6'd1 : (6'd32 - lz_dd);
+                            div_total_iter <= total;
+                            div_iter       <= total - 6'd1; // will count down to 0
+                        end
+
+                        div_partial <= 33'd0;
+                        div_quotient <= 32'd0;
+                        state        <= C_DIV_WAIT;
+                    end
                 end
             end
 
-            // Wait 34 clocks for the IP pipeline to settle, then read result
+            // Iterative restoring binary long-division
+            // Each cycle: shift partial remainder left by 1, bring in next dividend bit,
+            // try to subtract divisor; if result >= 0 keep it and set quotient bit.
             C_DIV_WAIT: begin
-                if (div_wait_cnt == 6'd33) begin
+                begin : div_step
+                    // Bit index for this iteration (MSB first)
+                    // iteration 0 corresponds to bit (div_total_iter-1) of dividend
+                    reg [5:0]  bit_idx;
+                    reg [32:0] shifted;
+                    reg [32:0] subtracted;
+                    bit_idx   = div_iter;             // bit position in dividend
+                    shifted   = {div_partial[31:0], div_dividend_r[bit_idx]};
+                    subtracted = shifted - {1'b0, div_divisor_r};
+
+                    if (!subtracted[32]) begin
+                        // Remainder >= 0: keep subtracted, quotient bit = 1
+                        div_partial  <= subtracted;
+                        div_quotient <= div_quotient | (32'd1 << bit_idx);
+                    end else begin
+                        // Remainder < 0: restore, quotient bit = 0
+                        div_partial  <= shifted;
+                        // quotient bit stays 0
+                    end
+                end
+
+                if (div_iter == 6'd0) begin
+                    // Last iteration done — apply sign correction and write result
                     write_enable <= 1;
-                    if (div_is_rem)
-                        write_data <= div_is_signed ? div_sgn_remainder : div_uns_remainder;
-                    else
-                        write_data <= div_is_signed ? div_sgn_quotient  : div_uns_quotient;
+                    if (div_is_rem) begin
+                        // remainder sign follows dividend sign
+                        write_data <= div_rem_neg
+                                      ? (~div_partial[31:0] + 32'd1)
+                                      : div_partial[31:0];
+                    end else begin
+                        write_data <= div_quot_neg
+                                      ? (~div_quotient + 32'd1)
+                                      : div_quotient;
+                    end
                     state <= return_state;
                 end else begin
-                    div_wait_cnt <= div_wait_cnt + 6'd1;
+                    div_iter <= div_iter - 6'd1;
                 end
             end
 

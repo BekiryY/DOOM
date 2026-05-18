@@ -125,43 +125,7 @@
      },
      {
       "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 175,
-      "InstName" : "div_uns_inst",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
-      "ModuleLine" : 12256,
-      "ModuleName" : "integer_division_uns",
-      "SubInsts" : [
-       {
-        "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
-        "InstLine" : 12273,
-        "InstName" : "integer_division_inst",
-        "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
-        "ModuleLine" : 10,
-        "ModuleName" : "(integer_division)/(integer_division_uns)"
-       }
-      ]
-     },
-     {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 184,
-      "InstName" : "div_sgn_inst",
-      "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
-      "ModuleLine" : 12795,
-      "ModuleName" : "integer_division_signed",
-      "SubInsts" : [
-       {
-        "InstFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
-        "InstLine" : 12812,
-        "InstName" : "integer_division_inst",
-        "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
-        "ModuleLine" : 10,
-        "ModuleName" : "(integer_division)/(integer_division_signed)"
-       }
-      ]
-     },
-     {
-      "InstFile" : "C:/Users/BEK/repos/DOOM/src/cpu.v",
-      "InstLine" : 223,
+      "InstLine" : 221,
       "InstName" : "dcache_inst",
       "ModuleFile" : "C:/Users/BEK/repos/DOOM/src/DCache.v",
       "ModuleLine" : 5,

@@ -62,14 +62,6 @@
    "Type" : "verilog"
   },
   {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/integer_division_signed.v",
-   "Type" : "verilog"
-  },
-  {
-   "Path" : "C:/Users/BEK/repos/DOOM/src/integer_division_uns.v",
-   "Type" : "verilog"
-  },
-  {
    "Path" : "C:/Users/BEK/repos/DOOM/src/rpll_270/rpll_270.v",
    "Type" : "verilog"
   }

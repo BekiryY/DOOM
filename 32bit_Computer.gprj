@@ -20,8 +20,6 @@
         <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_rpll_2/gowin_rpll_2.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
-        <File path="src/integer_division_signed.v" type="file.verilog" enable="1"/>
-        <File path="src/integer_division_uns.v" type="file.verilog" enable="1"/>
         <File path="src/rpll_270/rpll_270.v" type="file.verilog" enable="1"/>
         <File path="src/32bitv2.cst" type="file.cst" enable="1"/>
         <File path="src/32bit.sdc" type="file.sdc" enable="1"/>

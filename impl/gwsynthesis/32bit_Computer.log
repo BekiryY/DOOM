@@ -15,8 +15,6 @@ Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\dvi_tx\dvi_tx.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_rpll\gowin_rpll.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_rpll_2\gowin_rpll_2.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\gowin_sdpb\gowin_sdpb.v'
-Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\integer_division_signed.v'
-Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\integer_division_uns.v'
 Analyzing Verilog file 'C:\Users\BEK\repos\DOOM\src\rpll_270\rpll_270.v'
 Compiling module 'Main_Computer'("C:\Users\BEK\repos\DOOM\src\Mainv3.v":1)
 Compiling module 'ICache'("C:\Users\BEK\repos\DOOM\src\ICache.v":11)
@@ -36,10 +34,6 @@ Compiling module '**'("C:\Users\BEK\repos\DOOM\src\dvi_tx\dvi_tx.v":1088)
 Compiling module 'cpu'("C:\Users\BEK\repos\DOOM\src\cpu.v":1)
 Compiling module 'CPU_Registers'("C:\Users\BEK\repos\DOOM\src\CPU_Registers.v":1)
 Extracting RAM for identifier 'registers'("C:\Users\BEK\repos\DOOM\src\CPU_Registers.v":19)
-Compiling module 'integer_division_uns'("C:\Users\BEK\repos\DOOM\src\integer_division_uns.v":12256)
-Compiling module '**'("C:\Users\BEK\repos\DOOM\src\integer_division_uns.v":12255)
-Compiling module 'integer_division_signed'("C:\Users\BEK\repos\DOOM\src\integer_division_signed.v":12795)
-Compiling module '**'("C:\Users\BEK\repos\DOOM\src\integer_division_signed.v":12794)
 Compiling module 'DCache'("C:\Users\BEK\repos\DOOM\src\DCache.v":5)
 Extracting RAM for identifier 'data_mem'("C:\Users\BEK\repos\DOOM\src\DCache.v":20)
 Extracting RAM for identifier 'tag_mem'("C:\Users\BEK\repos\DOOM\src\DCache.v":21)
